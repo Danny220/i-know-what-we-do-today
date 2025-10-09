@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import axios from 'axios';
 
-function Login() {
+function Login({setToken}) {
     const [formData, setFormData] = useState({
         email: '',
         password: ''
@@ -17,8 +17,8 @@ function Login() {
             const response = await axios.post('http://localhost:3001/api/auth/login', formData);
 
             const {token} = response.data;
-
             localStorage.setItem('token', token);
+            setToken(token);
 
             console.log('User successfully logged in!', token);
             alert('User successfully logged in!');

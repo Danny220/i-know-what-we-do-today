@@ -1,9 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
 
-function EventList() {
-    const {groupId} = useParams();
+function EventList({groupId}) {
     const [events, setEvents] = useState([]);
     const [loading, setLoading] = useState(false);
 

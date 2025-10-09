@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import {useParams} from "react-router-dom";
 
-function CreatePoll() {
-   const {groupId} = useParams();
+function CreatePoll({groupId}) {
    const [title, setTitle] = useState('');
    const [timeOptions, setTimeOptions] = useState('');
    const [locationOptions, setLocationOptions] = useState('');

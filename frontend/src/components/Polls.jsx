@@ -1,9 +1,7 @@
 import React, {useCallback, useEffect, useState} from 'react';
 import axios from 'axios';
-import {useParams} from "react-router-dom";
 
-function Polls() {
-    const {groupId} = useParams();
+function Polls({groupId}) {
     const [polls, setPolls] = useState([]);
     const [loading, setLoading] = useState(false);
 
