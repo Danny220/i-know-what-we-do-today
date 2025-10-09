@@ -7,6 +7,7 @@ const db = require('./config/db');
 const authRoutes = require('./routes/auth');
 const groupRoutes = require('./routes/groups');
 const pollRoutes = require('./routes/polls');
+const eventRoutes = require('./routes/events');
 
 const app = express();
 const PORT = 3001;
@@ -30,6 +31,9 @@ app.use('/api/groups', groupRoutes);
 
 // Poll routes
 app.use('/api/groups/:groupId/polls', pollRoutes);
+
+// Event routes
+app.use('/api/groups/:groupId/events', eventRoutes);
 
 //#endregion ROUTES
 

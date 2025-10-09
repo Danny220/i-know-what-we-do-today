@@ -6,6 +6,7 @@ import CreateGroup from "./components/CreateGroup.jsx";
 import GroupList from "./components/GroupList.jsx";
 import CreatePoll from "./components/CreatePoll.jsx";
 import Polls from "./components/Polls.jsx";
+import EventList from "./components/EventList.jsx";
 
 function App() {
     return (
@@ -23,6 +24,7 @@ function App() {
                 <CreateGroup />
                 <CreatePoll />
                 <Polls />
+                <EventList />
             </header>
         </div>
     );
