@@ -35,6 +35,19 @@ function Polls() {
         }
     };
 
+    const handleFinalize = async (pollId) => {
+        try {
+            const token = localStorage.getItem('token');
+            const config = { headers: { Authorization: `Bearer ${token}` } };
+            const response = await axios.post(`http://localhost:3001/api/groups/${groupId}/polls/${pollId}/finalize`, {}, config);
+            alert(response.data.message);
+            await fetchPolls();
+        } catch (err) {
+            console.error("Error finalizing poll", err);
+            alert('Error finalizing poll ' + (err.response?.data?.message ?? 'Retry later.'));
+        }
+    }
+
     const renderOptions = (poll, type) => {
         return poll.options.filter(opt => opt.type === type).map(opt => (
             <button key={opt.id} onClick={() => handleVote(poll.id, opt.id)}>{opt.value}</button>
@@ -69,6 +82,12 @@ function Polls() {
 
                     <h4>Activities:</h4>
                     <div>{renderOptions(poll, 'ACTIVITY')}</div>
+
+                    {poll.status === 'open' && (
+                        <button onClick={() => handleFinalize(poll.id)} style={{marginTop: '10px', backgroundColor: 'green', color: 'white'}}>
+                            Finalize and Create Event
+                        </button>
+                    )}
                 </div>
             ))}
         </div>

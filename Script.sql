@@ -6,6 +6,7 @@ DROP TABLE IF EXISTS polls;
 DROP TABLE IF EXISTS locations;
 DROP TABLE IF EXISTS activities;
 DROP TABLE IF EXISTS votes;
+DROP TABLE IF EXISTS events;
 
 create table users (
 	id UUID primary key default gen_random_uuid(),
@@ -66,4 +67,15 @@ CREATE TABLE votes(
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     UNIQUE (poll_option_id, user_id)
+);
+
+CREATE TABLE events (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    start_time TIMESTAMP WITH TIME ZONE NOT NULL,
+    location_id UUID REFERENCES locations(id),
+    activity_id UUID REFERENCES activities(id),
+    group_id UUID NOT NULL REFERENCES groups(id) ON DELETE  CASCADE ,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );

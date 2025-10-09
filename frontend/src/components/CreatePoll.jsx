@@ -49,8 +49,13 @@ function CreatePoll() {
                    <input type="text" value={title} onChange={e => setTitle(e.target.value)} placeholder="Weekend out?" required />
                </div>
                <div>
-                    <label>Time Options (comma-separated):</label>
-                   <input type="text" value={timeOptions} onChange={e => setTimeOptions(e.target.value)} placeholder="Morning, Afternoon, Evening"/>
+                   <label>Time Options (format AAAA-MM-GG HH:mm, comma separated):</label>
+                   <input
+                       type="text"
+                       value={timeOptions}
+                       onChange={e => setTimeOptions(e.target.value)}
+                       placeholder="Ex.: 2025-10-25 20:30, 2025-10-26 21:00"
+                   />
                </div>
                <div>
                    <label>Location Options (comma-separated):</label>
