@@ -1,27 +1,31 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import axios from 'axios';
+import { useParams } from 'react-router-dom';
 
 function EventList() {
-    const [groupId, setGroupId] = useState('');
+    const {groupId} = useParams();
     const [events, setEvents] = useState([]);
     const [loading, setLoading] = useState(false);
 
-    const fetchEvents = async () => {
-        if (!groupId) return;
-        setLoading(true);
+    useEffect(() => {
+        const fetchEvents = async () => {
+            if (!groupId) return;
+            setLoading(true);
 
-        try {
-            const token = localStorage.getItem('token');
-            const config = { headers: { Authorization: `Bearer ${token}` } };
-            const response = await axios.get(`http://localhost:3001/api/groups/${groupId}/events`, config);
-            setEvents(response.data);
-        } catch (err) {
-            console.error("Error loading events", err);
-            setEvents([]);
-        } finally {
-            setLoading(false);
-        }
-    };
+            try {
+                const token = localStorage.getItem('token');
+                const config = { headers: { Authorization: `Bearer ${token}` } };
+                const response = await axios.get(`http://localhost:3001/api/groups/${groupId}/events`, config);
+                setEvents(response.data);
+            } catch (err) {
+                console.error("Error loading events", err);
+                setEvents([]);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchEvents().then();
+    }, [groupId]);
 
     const formatDateTime = (isoString) => {
         const date = new Date(isoString);
@@ -35,10 +39,6 @@ function EventList() {
         <div>
             <hr style={{margin: '20px 0'}}/>
             <h2>🗓️ Calendar of the Group</h2>
-            <div>
-                <input type="text" value={groupId} onChange={e => setGroupId(e.target.value)} placeholder="Insert group ID to see events" />
-                <button onClick={fetchEvents}>Load events</button>
-            </div>
 
             {loading && <p>Loading....</p>}
 

@@ -1,11 +1,12 @@
 import React, {useEffect, useState} from "react";
 import axios from "axios";
+import {Link} from "react-router-dom";
 
 function GroupList() {
     const [groups, setGroups] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
+    useEffect( () => {
         const fetchGroups = async () => {
             try {
                 const token = localStorage.getItem('token');
@@ -30,7 +31,7 @@ function GroupList() {
             }
         };
 
-        fetchGroups();
+        fetchGroups().then(() => {});
     }, []);
 
     if (loading) {
@@ -46,7 +47,7 @@ function GroupList() {
             ) : (
                 <ul>
                     {groups.map(group => (
-                        <li key={group.id}>{group.name}</li>
+                        <li key={group.id}><Link to={`/groups/${group.id}`} style={{color: '#61dafb'}}>{group.name}</Link></li>
                     ))}
                 </ul>
             )}

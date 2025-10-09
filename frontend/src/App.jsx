@@ -1,33 +1,40 @@
-import React from "react";
-import Register from "./components/Register.jsx";
-import Login from "./components/Login.jsx";
-import './App.css'
-import CreateGroup from "./components/CreateGroup.jsx";
+import React from 'react'
+import {BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import GroupList from "./components/GroupList.jsx";
-import CreatePoll from "./components/CreatePoll.jsx";
-import Polls from "./components/Polls.jsx";
 import EventList from "./components/EventList.jsx";
+import Polls from "./components/Polls.jsx";
+import CreatePoll from "./components/CreatePoll.jsx";
+import './App.css';
+
+function GroupDetailPage() {
+    return (
+        <div>
+                <EventList />
+                <Polls />
+                <CreatePoll />
+        </div>
+    )
+}
 
 function App() {
     return (
-        <div className="App">
-            <header className="App-header">
-                <div style={{display: 'flex', flexDirection: 'column', gap:'0'}}>
-                    <h1 style={{margin: '0'}}>IKWWDT</h1>
-                    <p style={{margin: '0'}}>i know what we do today</p>
-                </div>
-                <div style={{display: 'flex', gap: '50px'}}>
-                    <Register />
-                     <Login />
-                </div>
-                <GroupList />
-                <CreateGroup />
-                <CreatePoll />
-                <Polls />
-                <EventList />
-            </header>
-        </div>
-    );
+        <Router>
+            <div className="App">
+                <header className="App-header">
+                    <nav style={{marginBottom: '20px'}}>
+                        <Link to="/" style={{marginRight: '15px'}}>Home</Link>
+                    </nav>
+
+                    <h1>I Know What We'll Do Today</h1>
+
+                    <Routes>
+                        <Route path="/" element={<GroupList />} />
+                        <Route path="/groups/:groupId" element={<GroupDetailPage />} />
+                    </Routes>
+                </header>
+            </div>
+        </Router>
+    )
 }
 
 export default App;

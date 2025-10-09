@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import axios from 'axios';
+import {useParams} from "react-router-dom";
 
 function Polls() {
-    const [groupId, setGroupId] = useState('');
+    const {groupId} = useParams();
     const [polls, setPolls] = useState([]);
     const [loading, setLoading] = useState(false);
 
-    const fetchPolls = async () => {
+    const fetchPolls = useCallback(async () => {
         if (!groupId) return;
         setLoading(true);
         try {
@@ -20,7 +21,13 @@ function Polls() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [groupId]);
+    
+    useEffect(() => {
+        if (!groupId) return;
+
+        fetchPolls().then();
+    }, [fetchPolls, groupId]);
 
     const handleVote = async (pollId, optionId) => {
         try {
@@ -58,17 +65,8 @@ function Polls() {
         <div>
             <hr style={{margin: '20px 0'}}/>
             <h2>Group's poll</h2>
-            <div>
-                <input
-                    type="text"
-                    value={groupId}
-                    onChange={e => setGroupId(e.target.value)}
-                    placeholder="Insert group ID to see polls" />
-                <button onClick={fetchPolls}>Load polls</button>
-            </div>
 
             {loading && <p>Loading....</p>}
-
             {polls.map(poll => (
                 <div key={poll.id} style={{border: '1px solid grey', padding: '10px', margin: '10px 0'}}>
                     <h3>{poll.title}</h3>

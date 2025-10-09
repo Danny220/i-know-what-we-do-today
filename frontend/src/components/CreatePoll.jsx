@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import {useParams} from "react-router-dom";
 
 function CreatePoll() {
-   const [groupId, setGroupId] = useState('');
+   const {groupId} = useParams();
    const [title, setTitle] = useState('');
    const [timeOptions, setTimeOptions] = useState('');
    const [locationOptions, setLocationOptions] = useState('');
@@ -40,10 +41,6 @@ function CreatePoll() {
            <hr style={{margin: '20px 0'}}/>
            <h2>Suggest a New Event</h2>
            <form onSubmit={handleSubmit}>
-               <div>
-                   <label>Group ID:</label>
-                   <input type="text" value={groupId} onChange={e => setGroupId(e.target.value)} placeholder="Copy group ID here" required />
-               </div>
                <div>
                    <label>Poll Title:</label>
                    <input type="text" value={title} onChange={e => setTitle(e.target.value)} placeholder="Weekend out?" required />
