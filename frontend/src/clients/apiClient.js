@@ -1,7 +1,9 @@
 import axios from 'axios';
 
+const API_BASE_URL = process.env.NODE_ENV === 'production' ? 'TODO' : 'http://localhost:3001/api';
+
 const apiClient = axios.create({
-    baseURL: 'http://localhost:3001/api'
+    baseURL: API_BASE_URL
 })
 
 apiClient.interceptors.request.use(
