@@ -2,8 +2,7 @@
 
 A full-stack web application designed to help groups of friends organize their outings through a collaborative polling system.
 
-![App Screenshot](https://i.imgur.com/your-screenshot-url.png)
-*Replace the URL above with a link to a screenshot of your deployed app.*
+![App Screenshot](https://i.imgur.com/BbcwTKO.png)
 
 ---
 
