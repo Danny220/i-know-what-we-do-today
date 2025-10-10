@@ -1,6 +1,5 @@
 import React, {useState} from "react";
-import axios from 'axios';
-
+import apiClient from "../clients/apiClient.js";
 function Login({setToken}) {
     const [formData, setFormData] = useState({
         email: '',
@@ -14,7 +13,7 @@ function Login({setToken}) {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post('http://localhost:3001/api/auth/login', formData);
+            const response = await apiClient.post('/auth/login', formData);
 
             const {token} = response.data;
             localStorage.setItem('token', token);

@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
-import axios from "axios";
 import {Link} from "react-router-dom";
+import apiClient from "../clients/apiClient.js";
 
 function GroupList() {
     const [groups, setGroups] = useState([]);
@@ -15,13 +15,7 @@ function GroupList() {
                     return;
                 }
 
-                const config = {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                };
-
-                const response = await axios.get('http://localhost:3001/api/groups', config);
+                const response = await apiClient.get('/groups');
 
                 setGroups(response.data);
             } catch (err) {

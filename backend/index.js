@@ -8,6 +8,7 @@ const authRoutes = require('./routes/auth');
 const groupRoutes = require('./routes/groups');
 const pollRoutes = require('./routes/polls');
 const eventRoutes = require('./routes/events');
+const inviteRoutes = require('./routes/invites');
 
 const app = express();
 const PORT = 3001;
@@ -34,6 +35,9 @@ app.use('/api/groups/:groupId/polls', pollRoutes);
 
 // Event routes
 app.use('/api/groups/:groupId/events', eventRoutes);
+
+// Invite routes
+app.use('/api/invites', inviteRoutes);
 
 //#endregion ROUTES
 

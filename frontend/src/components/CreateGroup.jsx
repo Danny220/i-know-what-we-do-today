@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import axios from "axios";
+import apiClient from "../clients/apiClient.js";
 
 function CreateGroup() {
     const [groupData, setGroupData] = useState({name: '', description: ''});
@@ -25,7 +25,7 @@ function CreateGroup() {
                 }
             };
 
-            const response = await axios.post('http://localhost:3001/api/groups', groupData, config);
+            const response = await apiClient.post('/groups', groupData, config);
 
             alert(`Group "${response.data.name}" created successfully!`);
 

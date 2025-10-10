@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import axios from 'axios';
+import apiClient from "../clients/apiClient.js";
 
 function EventList({groupId}) {
     const [events, setEvents] = useState([]);
@@ -11,9 +11,7 @@ function EventList({groupId}) {
             setLoading(true);
 
             try {
-                const token = localStorage.getItem('token');
-                const config = { headers: { Authorization: `Bearer ${token}` } };
-                const response = await axios.get(`http://localhost:3001/api/groups/${groupId}/events`, config);
+                const response = await apiClient.get(`/groups/${groupId}/events`);
                 setEvents(response.data);
             } catch (err) {
                 console.error("Error loading events", err);

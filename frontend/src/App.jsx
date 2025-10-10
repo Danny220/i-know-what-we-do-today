@@ -8,6 +8,7 @@ import './App.css';
 import AuthPage from "./pages/AuthPage.jsx";
 import DashboardPage from "./pages/DashboardPage.jsx";
 import GroupDetailPage from "./pages/GroupDetailPage.jsx";
+import JoinPage from "./pages/JoinPage.jsx";
 
 function App() {
     const [token, setToken] = useState(null);
@@ -44,6 +45,9 @@ function App() {
                         }/>
                         <Route path="/groups/:groupId" element={
                             token ? <GroupDetailPage /> : <Navigate to="/" />
+                        }/>
+                        <Route path="/join/:inviteCode" element={
+                            <JoinPage />
                         }/>
                     </Routes>
                 </header>

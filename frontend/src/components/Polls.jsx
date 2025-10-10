@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useState} from 'react';
-import axios from 'axios';
+import apiClient from "../clients/apiClient.js";
 
 function Polls({groupId}) {
     const [polls, setPolls] = useState([]);
@@ -9,9 +9,7 @@ function Polls({groupId}) {
         if (!groupId) return;
         setLoading(true);
         try {
-            const token = localStorage.getItem('token');
-            const config = { headers: { Authorization: `Bearer ${token}` } };
-            const response = await axios.get(`http://localhost:3001/api/groups/${groupId}/polls`, config);
+            const response = await apiClient.get(`/groups/${groupId}/polls`);
             setPolls(response.data);
         } catch (err) {
             console.error("Error loading polls", err);
@@ -29,9 +27,7 @@ function Polls({groupId}) {
 
     const handleVote = async (pollId, optionId) => {
         try {
-            const token = localStorage.getItem('token');
-            const config = { headers: { Authorization: `Bearer ${token}` } };
-            await axios.post(`http://localhost:3001/api/groups/${groupId}/polls/${pollId}/vote`, {optionId}, config);
+            await apiClient.post(`/groups/${groupId}/polls/${pollId}/vote`, {optionId});
             alert('Vote successfully registered');
             await fetchPolls();
         } catch (err) {
@@ -42,9 +38,7 @@ function Polls({groupId}) {
 
     const handleFinalize = async (pollId) => {
         try {
-            const token = localStorage.getItem('token');
-            const config = { headers: { Authorization: `Bearer ${token}` } };
-            const response = await axios.post(`http://localhost:3001/api/groups/${groupId}/polls/${pollId}/finalize`, {}, config);
+            const response = await apiClient.post(`/groups/${groupId}/polls/${pollId}/finalize`);
             alert(response.data.message);
             await fetchPolls();
         } catch (err) {

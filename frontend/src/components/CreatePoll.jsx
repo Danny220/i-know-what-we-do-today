@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import apiClient from "../clients/apiClient.js";
 
 function CreatePoll({groupId}) {
    const [title, setTitle] = useState('');
@@ -23,9 +23,8 @@ function CreatePoll({groupId}) {
                alert("Please enter a valid group or log in");
                return;
            }
-           const config = {headers: {'Authorization': `Bearer ${token}`}};
 
-           await axios.post(`http://localhost:3001/api/groups/${groupId}/polls`, pollData, config)
+           await apiClient.post(`/groups/${groupId}/polls`, pollData)
 
            alert("Poll created successfully!");
        } catch (err) {

@@ -7,6 +7,7 @@ DROP TABLE IF EXISTS locations;
 DROP TABLE IF EXISTS activities;
 DROP TABLE IF EXISTS votes;
 DROP TABLE IF EXISTS events;
+DROP TABLE IF EXISTS invites;
 
 create table users (
 	id UUID primary key default gen_random_uuid(),
@@ -79,3 +80,12 @@ CREATE TABLE events (
     group_id UUID NOT NULL REFERENCES groups(id) ON DELETE  CASCADE ,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
+
+CREATE TABLE invites (
+    code VARCHAR(8) PRIMARY KEY,
+    group_id UUID NOT NULL REFERENCES groups(id) ON DELETE CASCADE,
+    created_by UUID NOT NULL REFERENCES users(id),
+    expires_at TIMESTAMP WITH TIME ZONE NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    used_at TIMESTAMP WITH TIME ZONE
+)
