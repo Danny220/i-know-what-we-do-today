@@ -1,68 +1,69 @@
 import React, { useState } from 'react';
+import Input from './ui/Input';
+import Button from './ui/Button';
 import apiClient from "../clients/apiClient.js";
+import Card from "./ui/Card.jsx";
+import H2 from "./ui/H2.jsx";
+import Label from "./ui/Label.jsx";
 
-function CreatePoll({groupId}) {
-   const [title, setTitle] = useState('');
-   const [timeOptions, setTimeOptions] = useState('');
-   const [locationOptions, setLocationOptions] = useState('');
-   const [activityOptions, setActivityOptions] = useState('');
+function CreatePoll({ groupId }) {
+    const [title, setTitle] = useState('');
+    const [timeOptions, setTimeOptions] = useState('');
+    const [locationOptions, setLocationOptions] = useState('');
+    const [activityOptions, setActivityOptions] = useState('');
 
-   const handleSubmit = async (e) => {
-       e.preventDefault();
+    const handleSubmit = async (e) => {
+        e.preventDefault();
 
-       const pollData = {
-           title,
-           timeOptions: timeOptions.split(',').map(s => s.trim()),
-           locationOptions: locationOptions.split(',').map(s => s.trim()),
-           activityOptions: activityOptions.split(',').map(s => s.trim()),
-       };
+        const pollData = {
+            title,
+            timeOptions: timeOptions.split(',').map(s => s.trim()).filter(s => s),
+            locationOptions: locationOptions.split(',').map(s => s.trim()).filter(s => s),
+            activityOptions: activityOptions.split(',').map(s => s.trim()).filter(s => s),
+        };
 
-       try {
-           const token = localStorage.getItem('token');
-           if (!token || !groupId) {
-               alert("Please enter a valid group or log in");
-               return;
-           }
+        try {
+            if (!groupId) {
+                alert('Group ID is missing!');
+                return;
+            }
+            await apiClient.post(`/groups/${groupId}/polls`, pollData);
+            alert('Poll created successfully!');
+            // Clear the form
+            setTitle('');
+            setTimeOptions('');
+            setLocationOptions('');
+            setActivityOptions('');
+        } catch (error) {
+            console.error('Error creating poll', error);
+            alert('Error: ' + (error.response?.data?.message || 'Please try again.'));
+        }
+    };
 
-           await apiClient.post(`/groups/${groupId}/polls`, pollData)
-
-           alert("Poll created successfully!");
-       } catch (err) {
-           console.error("Error creating poll", err);
-           alert('Error: ' + (err.response?.data?.message ?? 'Retry later.'))
-       }
-   };
-
-   return (
-       <div>
-           <hr style={{margin: '20px 0'}}/>
-           <h2>Suggest a New Event</h2>
-           <form onSubmit={handleSubmit}>
-               <div>
-                   <label>Poll Title:</label>
-                   <input type="text" value={title} onChange={e => setTitle(e.target.value)} placeholder="Weekend out?" required />
-               </div>
-               <div>
-                   <label>Time Options (format AAAA-MM-GG HH:mm, comma separated):</label>
-                   <input
-                       type="text"
-                       value={timeOptions}
-                       onChange={e => setTimeOptions(e.target.value)}
-                       placeholder="Ex.: 2025-10-25 20:30, 2025-10-26 21:00"
-                   />
-               </div>
-               <div>
-                   <label>Location Options (comma-separated):</label>
-                   <input type="text" value={locationOptions} onChange={e => setLocationOptions(e.target.value)} placeholder="Pizzeria, club, bar, home"/>
-               </div>
-               <div>
-                   <label>Activity Options (comma-separated):</label>
-                   <input type="text" value={activityOptions} onChange={e => setActivityOptions(e.target.value)} placeholder="Drinking, eating, visiting"/>
-               </div>
-               <button type="submit">Create Poll</button>
-           </form>
-       </div>
-   );
+    return (
+        <Card>
+            <H2>Propose a New Event</H2>
+            <form onSubmit={handleSubmit} className="space-y-4">
+                <div>
+                    <Label htmlFor="title">Poll Title</Label>
+                    <Input id="title" type="text" value={title} onChange={e => setTitle(e.target.value)} placeholder="e.g., Weekend Outing" required />
+                </div>
+                <div>
+                    <Label htmlFor="time">Time Options (YYYY-MM-DD HH:mm, comma-separated)</Label>
+                    <Input id="time" type="text" value={timeOptions} onChange={e => setTimeOptions(e.target.value)} placeholder="e.g., 2025-10-25 20:30, 2025-10-26 21:00" />
+                </div>
+                <div>
+                    <Label htmlFor="location">Location Options (comma-separated)</Label>
+                    <Input id="location" type="text" value={locationOptions} onChange={e => setLocationOptions(e.target.value)} placeholder="e.g., Pizzeria, Sushi Restaurant" />
+                </div>
+                <div>
+                    <Label htmlFor="activity">Activity Options (comma-separated)</Label>
+                    <Input id="activity" type="text" value={activityOptions} onChange={e => setActivityOptions(e.target.value)} placeholder="e.g., Dinner, Aperitivo" />
+                </div>
+                <Button type="submit">Create Poll</Button>
+            </form>
+        </Card>
+    );
 }
 
 export default CreatePoll;

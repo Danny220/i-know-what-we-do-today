@@ -1,5 +1,10 @@
 import React, {useState} from 'react';
 import apiClient from "../clients/apiClient.js";
+import Card from "./ui/Card.jsx";
+import H2 from "./ui/H2.jsx";
+import Input from "./ui/Input.jsx";
+import Textarea from "./ui/Textarea.jsx";
+import Button from "./ui/Button.jsx";
 
 function CreateGroup() {
     const [groupData, setGroupData] = useState({name: '', description: ''});
@@ -12,20 +17,7 @@ function CreateGroup() {
         e.preventDefault();
 
         try {
-            const token = localStorage.getItem('token');
-
-            if (!token) {
-                alert('You are not logged in!');
-                return;
-            }
-
-            const config = {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            };
-
-            const response = await apiClient.post('/groups', groupData, config);
+            const response = await apiClient.post('/groups', groupData);
 
             alert(`Group "${response.data.name}" created successfully!`);
 
@@ -38,21 +30,20 @@ function CreateGroup() {
     };
 
     return (
-        <div>
-            <hr style={{margin: '20px 0'}}/>
-            <h2>Create a new group</h2>
-            <form onSubmit={handleSubmit}>
+        <Card>
+            <H2>Create a new group</H2>
+            <form className="space-y-4" onSubmit={handleSubmit}>
                 <div>
-                    <label>Group Name:</label>
-                    <input type="text" name="name" value={groupData.name} onChange={handleChange} required/>
+                    <label htmlFor="groupName">Group Name:</label>
+                    <Input id="groupName" type="text" name="name" value={groupData.name} onChange={handleChange} required/>
                 </div>
                 <div>
-                    <label>Description:</label>
-                    <textarea name="description" value={groupData.description} onChange={handleChange} />
+                    <label htmlFor="description">Description:</label>
+                    <Textarea id="description" name="description" value={groupData.description} onChange={handleChange} />
                 </div>
-                <button type="submit">Create Group</button>
+                <Button type="submit">Create Group</Button>
             </form>
-        </div>
+        </Card>
     );
 }
 

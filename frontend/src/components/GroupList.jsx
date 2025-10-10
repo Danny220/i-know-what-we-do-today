@@ -1,6 +1,8 @@
 import React, {useEffect, useState} from "react";
 import {Link} from "react-router-dom";
 import apiClient from "../clients/apiClient.js";
+import Card from "./ui/Card.jsx";
+import H2 from "./ui/H2.jsx";
 
 function GroupList() {
     const [groups, setGroups] = useState([]);
@@ -29,23 +31,25 @@ function GroupList() {
     }, []);
 
     if (loading) {
-        return <p>Loading groups...</p>;
+        return <p className="text-gray-400">Loading groups...</p>;
     }
 
     return (
-        <div>
-            <hr style={{margin: '20px 0'}}/>
-            <h2>My groups</h2>
+        <Card>
+            <H2>My groups</H2>
             {groups.length === 0 ? (
-                <p>You are still not member of any group</p>
+                <p className="text-gray-400">You are not part of any group yet.</p>
             ) : (
-                <ul>
+                <div className="space-y-4">
                     {groups.map(group => (
-                        <li key={group.id}><Link to={`/groups/${group.id}`} style={{color: '#61dafb'}}>{group.name}</Link></li>
+                        <Link key={group.id} to={`/groups/${group.id}`} className="block p-4 bg-gray-700 rounded-lg hover:bg-gray-600 transition-colors duration-200">
+                            <h3 className="font-bold text-lg text-white">{group.name}</h3>
+                            <p className="text-sm text-gray-300">{group.description}</p>
+                        </Link>
                     ))}
-                </ul>
+                </div>
             )}
-        </div>
+        </Card>
     );
 }
 

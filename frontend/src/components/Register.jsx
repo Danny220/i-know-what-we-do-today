@@ -1,5 +1,10 @@
 import React, {useState} from "react";
 import apiClient from "../clients/apiClient.js";
+import Label from "./ui/Label.jsx";
+import Input from "./ui/Input.jsx";
+import Button from "./ui/Button.jsx";
+import Card from "./ui/Card.jsx";
+import H2 from "./ui/H2.jsx";
 
 function Register() {
     const [formData, setFormData] = useState({
@@ -16,10 +21,8 @@ function Register() {
         e.preventDefault();
 
         try {
-            const response = await apiClient.post('/auth/register', formData);
-
-            console.log('User registered successfully!', response.data);
-            alert('Registered successfully!');
+            await apiClient.post('/auth/register', formData);
+            alert('Registration successful! You can now log in.');
         } catch (error) {
             console.error("Error occurred during registration!", error);
             alert('Error occurred during registration!');
@@ -27,24 +30,24 @@ function Register() {
     };
 
     return (
-        <div>
-            <h2>Register now</h2>
-            <form onSubmit={handleSubmit}>
+        <Card className="max-w-md">
+            <H2>Create an Account</H2>
+            <form className="space-y-6"  onSubmit={handleSubmit}>
                 <div>
-                    <label>Username:</label>
-                    <input type="text" name="username" value={formData.username} onChange={handleChange} required />
+                    <Label>Username:</Label>
+                    <Input type="text" name="username" value={formData.username} onChange={handleChange} required />
                 </div>
                 <div>
-                    <label>Email:</label>
-                    <input type="email" name="email" value={formData.email} onChange={handleChange} required />
+                    <Label>Email:</Label>
+                    <Input type="email" name="email" value={formData.email} onChange={handleChange} required />
                 </div>
                 <div>
-                    <label>Password:</label>
-                    <input type="password" name="password" value={formData.password} onChange={handleChange} required />
+                    <Label>Password:</Label>
+                    <Input type="password" name="password" value={formData.password} onChange={handleChange} required />
                     </div>
-                <button type="submit">Register</button>
+                <Button type="submit">Register</Button>
             </form>
-        </div>
+        </Card>
     );
 }
 

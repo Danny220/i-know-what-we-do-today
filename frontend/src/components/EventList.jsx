@@ -1,21 +1,20 @@
-import React, {useEffect, useState} from 'react';
+// File: frontend/src/components/EventList.jsx
+import React, { useState, useEffect } from 'react';
 import apiClient from "../clients/apiClient.js";
+import H2 from "./ui/H2.jsx";
 
-function EventList({groupId}) {
+function EventList({ groupId }) {
     const [events, setEvents] = useState([]);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        if (!groupId) return;
         const fetchEvents = async () => {
-            if (!groupId) return;
-            setLoading(true);
-
             try {
                 const response = await apiClient.get(`/groups/${groupId}/events`);
                 setEvents(response.data);
-            } catch (err) {
-                console.error("Error loading events", err);
-                setEvents([]);
+            } catch (error) {
+                console.error("Error loading events", error);
             } finally {
                 setLoading(false);
             }
@@ -24,37 +23,37 @@ function EventList({groupId}) {
     }, [groupId]);
 
     const formatDateTime = (isoString) => {
-        const date = new Date(isoString);
-        return date.toLocaleString('it-IT', { // TODO: internationalize
+        if (!isoString) return 'Not specified';
+        return new Date(isoString).toLocaleString('en-US', {
             dateStyle: 'full',
-            timeStyle: 'short'
+            timeStyle: 'short',
         });
-    }
+    };
 
     return (
-        <div>
-            <hr style={{margin: '20px 0'}}/>
-            <h2>🗓️ Calendar of the Group</h2>
+        <div className="bg-gray-800 rounded-lg shadow-md p-6 mb-8">
+            <H2>🗓️ Finalized Events</H2>
 
-            {loading && <p>Loading....</p>}
+            {loading && <p className="text-gray-400">Loading events...</p>}
 
-            {events.length === 0 && !loading && (
-                <p>No events found for this group</p>
+            {!loading && events.length === 0 && (
+                <p className="text-gray-400">No upcoming events for this group.</p>
             )}
 
-            <div style={{marginTop: '20px'}}>
+            <div className="space-y-4">
                 {events.map(event => (
-                    <div key={event.id} style={{border: '1px solid #444', padding: '15px', margin: '10px 0', borderRadius: '8px'}}>
-                        <h3>{event.title}</h3>
-                        <p><strong>When:</strong> {formatDateTime(event.start_time)}</p>
-                        <p><strong>Where:</strong> {event.location_name ?? 'N/A'}</p>
-                        <p><strong>What:</strong> {event.activity_name ?? 'N/A'}</p>
-                        {event.description && <p><em>{event.description}</em></p>}
+                    <div key={event.id} className="bg-gray-700 p-4 rounded-lg">
+                        <h3 className="font-bold text-lg text-white">{event.title}</h3>
+                        <p className="text-sm text-blue-300">{formatDateTime(event.start_time)}</p>
+                        <div className="text-sm text-gray-300 mt-2">
+                            <p><span className="font-semibold">Where:</span> {event.location_name || 'TBD'}</p>
+                            <p><span className="font-semibold">What:</span> {event.activity_name || 'TBD'}</p>
+                        </div>
                     </div>
                 ))}
             </div>
         </div>
-    )
+    );
 }
 
 export default EventList;
