@@ -54,7 +54,7 @@ function JoinPage() {
                 <p className="text-gray-300 text-center mb-6">
                     You are about to join the group: <strong className="text-white">{groupNmae}</strong>
                 </p>
-                <Button onClick={handleJoin} disabled={isJoining}>
+                <Button onClick={handleJoin} disabled={isJoining} className="w-full">
                     {isJoining ? 'Joining...' : 'Join Group'}
                 </Button>
             </>

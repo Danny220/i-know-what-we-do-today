@@ -3,6 +3,7 @@ import React, { useEffect } from 'react';
 import apiClient from "../clients/apiClient.js";
 import H2 from "./ui/H2.jsx";
 import useEventStore from "../stores/eventStore.js";
+import Card from "./ui/Card.jsx";
 
 function EventList({ groupId }) {
     const {events, isLoading, fetchEvents} = useEventStore();
@@ -22,7 +23,7 @@ function EventList({ groupId }) {
     };
 
     return (
-        <div className="bg-gray-800 rounded-lg shadow-md p-6 mb-8">
+        <Card>
             <H2>🗓️ Finalized Events</H2>
 
             {isLoading && <p className="text-gray-400">Loading events...</p>}
@@ -43,7 +44,7 @@ function EventList({ groupId }) {
                     </div>
                 ))}
             </div>
-        </div>
+        </Card>
     );
 }
 

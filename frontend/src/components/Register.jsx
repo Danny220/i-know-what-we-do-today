@@ -45,7 +45,7 @@ function Register() {
                     <Label>Password:</Label>
                     <Input type="password" name="password" value={formData.password} onChange={handleChange} required />
                     </div>
-                <Button type="submit">Register</Button>
+                <Button type="submit" className="w-full">Register</Button>
             </form>
         </Card>
     );

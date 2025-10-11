@@ -4,6 +4,7 @@ import Button from "./ui/Button.jsx";
 import H2 from "./ui/H2.jsx";
 import usePollStore from "../stores/pollStore.js";
 import H4 from "./ui/H4.jsx";
+import Card from "./ui/Card.jsx";
 
 function Polls({ groupId }) {
     const {polls, isLoading, fetchPolls, voteOnPoll, finalizePoll} = usePollStore();
@@ -44,7 +45,7 @@ function Polls({ groupId }) {
                             <div className="flex items-center gap-3">
                                 <Button
                                     onClick={() => handleVote(poll.id, opt.id)}
-                                    className="bg-gray-600 text-sm rounded-lg hover:bg-blue-600 transition-colors">
+                                    className="bg-gray-600 text-sm rounded-lg hover:bg-blue-600 transition-colors w-full">
                                     {opt.value}
                                 </Button>
                                 <div className="flex flex-wrap items-center gap-1">
@@ -63,7 +64,7 @@ function Polls({ groupId }) {
     };
 
     return (
-        <div className="bg-gray-800 rounded-lg shadow-md p-6 mt-8">
+        <Card>
             <H2>📣 Open Polls</H2>
 
             {isLoading && <p className="text-gray-400">Loading polls...</p>}
@@ -97,7 +98,7 @@ function Polls({ groupId }) {
                             <div className="mt-4 border-t border-gray-600 pt-4">
                                 <Button
                                     onClick={() => handleFinalize(poll.id)}
-                                    className="bg-green-600 hover:bg-green-700"
+                                    className="bg-green-600 hover:bg-green-700 w-full"
                                 >
                                     Finalize and Create Event
                                 </Button>
@@ -106,7 +107,7 @@ function Polls({ groupId }) {
                     </div>
                 ))}
             </div>
-        </div>
+        </Card>
     );
 }
 
