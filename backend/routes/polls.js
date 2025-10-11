@@ -163,15 +163,29 @@ router.get('/', auth, async (req, res) => {
        }
 
        // Get group's polls
-       const polls = await db.query('SELECT * FROM polls WHERE group_id = $1 ORDER BY created_at DESC', [groupId]);
+       const pollsResult = await db.query('SELECT * FROM polls WHERE group_id = $1 ORDER BY created_at DESC', [groupId]);
+       const polls = pollsResult.rows;
 
        // For each poll, get it's options
-       for (const poll of polls.rows) {
-           const options = await db.query('SELECT * FROM poll_options WHERE poll_id = $1', [poll.id]);
-           poll.options = options.rows;
+       for (const poll of polls) {
+           const optionsResult = await db.query('SELECT * FROM poll_options WHERE poll_id = $1', [poll.id]);
+           const options = optionsResult.rows;
+
+           for (const option of options) {
+               const votesResult = await db.query(
+                   `SELECT u.id, u.username
+                         FROM votes v
+                         JOIN users u ON v.user_id = u.id
+                         WHERE v.poll_option_id = $1`,
+                   [option.id]
+               );
+               option.voters = votesResult.rows;
+           }
+
+           poll.options = options;
        }
 
-       res.json(polls.rows);
+       res.json(polls);
    } catch (err) {
        console.error(err.message);
        res.status(500).send('Unexpected Server Error');

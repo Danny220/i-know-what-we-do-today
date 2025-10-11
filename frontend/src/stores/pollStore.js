@@ -67,8 +67,7 @@ const usePollStore = create((set, get) => ({
     voteOnPoll: async (groupId, pollId, optionId) =>  {
         try {
             await apiClient.post(`/groups/${groupId}/polls/${pollId}/vote`, {optionId});
-            alert('Vote registered!');
-            // TODO: refresh the poll data to show vote counts
+            await get().fetchPolls(groupId);
         } catch (error) {
             console.error("Error while voting", error);
             throw error;
