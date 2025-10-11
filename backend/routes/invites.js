@@ -1,6 +1,7 @@
 const express = require('express');
 const auth = require('../middleware/auth');
 const db = require('../config/db');
+const {customAlphabet} = require("nanoid");
 
 const router = express.Router();
 
@@ -58,6 +59,35 @@ router.post('/:inviteCode/join', auth, async (req, res) => {
         console.log('User joined group:', groupId, ' user: ', userId);
 
         res.status(200).json({message: 'You have successfully joined the group', groupId});
+    } catch (err) {
+        await db.query('ROLLBACK');
+        console.error(err.message);
+        res.status(500).send('Unexpected Server Error');
+    }
+})
+
+// POST /api/groups/:groupId/invites - create a new invite
+router.post('/groups/:groupId', auth, async (req, res) => {
+    const {groupId} = req.params;
+    const userId = req.user.id;
+
+    try {
+        // Generate a random 8-character code
+        const nanoid = customAlphabet('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', 8);
+        const code = nanoid();
+
+        // The invite will expire in 24 hours
+        const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
+
+        await db.query('BEGIN');
+
+        await db.query(
+            'INSERT INTO invites (code, group_id, created_by, expires_at) VALUES ($1, $2, $3, $4)',
+            [code, groupId, userId, expiresAt]
+        );
+
+        await db.query('COMMIT');
+        res.status(201).json({message: 'Invite created successfully', inviteCode: code});
     } catch (err) {
         await db.query('ROLLBACK');
         console.error(err.message);
