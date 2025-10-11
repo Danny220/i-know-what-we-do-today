@@ -5,8 +5,10 @@ import apiClient from "../clients/apiClient.js";
 import Card from "./ui/Card.jsx";
 import H2 from "./ui/H2.jsx";
 import Label from "./ui/Label.jsx";
+import usePollStore from "../stores/pollStore.js";
 
 function CreatePoll({ groupId }) {
+    const createPoll = usePollStore(state => state.createPoll);
     const [title, setTitle] = useState('');
     const [timeOptions, setTimeOptions] = useState('');
     const [locationOptions, setLocationOptions] = useState('');
@@ -23,11 +25,7 @@ function CreatePoll({ groupId }) {
         };
 
         try {
-            if (!groupId) {
-                alert('Group ID is missing!');
-                return;
-            }
-            await apiClient.post(`/groups/${groupId}/polls`, pollData);
+            await createPoll(groupId, pollData);
             alert('Poll created successfully!');
             // Clear the form
             setTitle('');

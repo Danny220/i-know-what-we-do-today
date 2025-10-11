@@ -1,26 +1,17 @@
 // File: frontend/src/components/EventList.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import apiClient from "../clients/apiClient.js";
 import H2 from "./ui/H2.jsx";
+import useEventStore from "../stores/eventStore.js";
 
 function EventList({ groupId }) {
-    const [events, setEvents] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const {events, isLoading, fetchEvents} = useEventStore();
 
     useEffect(() => {
         if (!groupId) return;
-        const fetchEvents = async () => {
-            try {
-                const response = await apiClient.get(`/groups/${groupId}/events`);
-                setEvents(response.data);
-            } catch (error) {
-                console.error("Error loading events", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchEvents().then();
-    }, [groupId]);
+
+        fetchEvents(groupId).then();
+    }, [groupId, fetchEvents]);
 
     const formatDateTime = (isoString) => {
         if (!isoString) return 'Not specified';
@@ -34,9 +25,9 @@ function EventList({ groupId }) {
         <div className="bg-gray-800 rounded-lg shadow-md p-6 mb-8">
             <H2>🗓️ Finalized Events</H2>
 
-            {loading && <p className="text-gray-400">Loading events...</p>}
+            {isLoading && <p className="text-gray-400">Loading events...</p>}
 
-            {!loading && events.length === 0 && (
+            {!isLoading && events.length === 0 && (
                 <p className="text-gray-400">No upcoming events for this group.</p>
             )}
 

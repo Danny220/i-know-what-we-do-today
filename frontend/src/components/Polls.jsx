@@ -1,36 +1,19 @@
 // File: frontend/src/components/Polls.jsx
-import React, { useState, useEffect } from 'react';
-import apiClient from "../clients/apiClient.js";
+import React, {  useEffect } from 'react';
 import Button from "./ui/Button.jsx";
 import H2 from "./ui/H2.jsx";
+import usePollStore from "../stores/pollStore.js";
 
 function Polls({ groupId }) {
-    const [polls, setPolls] = useState([]);
-    const [loading, setLoading] = useState(false);
-
-    const fetchPolls = async () => {
-        if (!groupId) return;
-        setLoading(true);
-        try {
-            const response = await apiClient.get(`/groups/${groupId}/polls`);
-            setPolls(response.data);
-        } catch (error) {
-            console.error("Error loading polls", error);
-            setPolls([]);
-        } finally {
-            setLoading(false);
-        }
-    };
+    const {polls, isLoading, fetchPolls, voteOnPoll, finalizePoll} = usePollStore();
 
     useEffect(() => {
-        fetchPolls().then();
-    }, [groupId]);
+        fetchPolls(groupId).then();
+    }, [groupId, fetchPolls]);
 
     const handleVote = async (pollId, optionId) => {
         try {
-            await apiClient.post(`/groups/${groupId}/polls/${pollId}/vote`, { optionId });
-            alert('Vote registered!');
-            // TODO: refresh the poll data to show vote counts
+            await voteOnPoll(groupId, pollId, optionId);
         } catch (error) {
             console.error("Error while voting", error);
             alert('Vote failed.');
@@ -39,9 +22,8 @@ function Polls({ groupId }) {
 
     const handleFinalize = async (pollId) => {
         try {
-            const response = await apiClient.post(`/groups/${groupId}/polls/${pollId}/finalize`);
-            alert(response.data.message);
-            await fetchPolls(); // Refresh polls to update status
+            await finalizePoll(groupId, pollId);
+            alert('Poll finalized successfully and event created!');
         } catch (error) {
             console.error("Error during finalization", error);
             alert('Finalization failed: ' + (error.response?.data?.message || 'Please try again.'));
@@ -66,9 +48,9 @@ function Polls({ groupId }) {
         <div className="bg-gray-800 rounded-lg shadow-md p-6 mt-8">
             <H2>📣 Open Polls</H2>
 
-            {loading && <p className="text-gray-400">Loading polls...</p>}
+            {isLoading && <p className="text-gray-400">Loading polls...</p>}
 
-            {!loading && polls.length === 0 && (
+            {!isLoading && polls.length === 0 && (
                 <p className="text-gray-400">No open polls in this group.</p>
             )}
 

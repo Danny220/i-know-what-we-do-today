@@ -1,36 +1,18 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect } from "react";
 import {Link} from "react-router-dom";
-import apiClient from "../clients/apiClient.js";
 import Card from "./ui/Card.jsx";
 import H2 from "./ui/H2.jsx";
+import useGroupStore from "../stores/groupStore.js";
 
 function GroupList() {
-    const [groups, setGroups] = useState([]);
-    const [loading, setLoading] = useState(true);
+    // Use store
+    const { groups, isLoading, fetchGroups } = useGroupStore();
 
-    useEffect( () => {
-        const fetchGroups = async () => {
-            try {
-                const token = localStorage.getItem('token');
-                if (!token) {
-                    setLoading(false);
-                    return;
-                }
+    useEffect(() => {
+        fetchGroups();
+    }, [fetchGroups]);
 
-                const response = await apiClient.get('/groups');
-
-                setGroups(response.data);
-            } catch (err) {
-                console.error('Error fetching groups',err)
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchGroups().then(() => {});
-    }, []);
-
-    if (loading) {
+    if (isLoading) {
         return <p className="text-gray-400">Loading groups...</p>;
     }
 

@@ -1,13 +1,14 @@
 import React, {useState} from 'react';
-import apiClient from "../clients/apiClient.js";
 import Card from "./ui/Card.jsx";
 import H2 from "./ui/H2.jsx";
 import Input from "./ui/Input.jsx";
 import Textarea from "./ui/Textarea.jsx";
 import Button from "./ui/Button.jsx";
+import useGroupStore from "../stores/groupStore.js";
 
 function CreateGroup() {
     const [groupData, setGroupData] = useState({name: '', description: ''});
+    const createGroup = useGroupStore(state => state.createGroup);
 
     const handleChange = (e) => {
         setGroupData({...groupData, [e.target.name]: e.target.value});
@@ -15,18 +16,9 @@ function CreateGroup() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-        try {
-            const response = await apiClient.post('/groups', groupData);
-
-            alert(`Group "${response.data.name}" created successfully!`);
-
-            // Clean form
-            setGroupData({name: '', description: ''});
-        } catch (err) {
-            console.error('Error during group creation!', err);
-            alert('Error during group creation!');
-        }
+        await createGroup(groupData);
+        alert(`Group "${groupData.name}" created successfully!`);
+        setGroupData({name: '', description: ''});
     };
 
     return (
