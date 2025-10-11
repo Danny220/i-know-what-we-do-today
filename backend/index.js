@@ -1,6 +1,5 @@
 const express = require('express');
 const cors = require('cors');
-
 const db = require('./config/db');
 
 // Imported routes
@@ -15,44 +14,27 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 
 // Middleware
-app.use(cors()); // Enable CORS
-app.use(express.json()); // Enable JSON reading in requests
+app.use(cors());
+app.use(express.json());
 
-//#region ROUTES
-
-// Test route
-app.get('/', (req, res) => {
-    res.send("Hello World!");
-});
-
-// Auth routes
+// =================================================================
+// ROUTES REGISTRATION
+// =================================================================
+app.get('/', (req, res) => res.send("Hello World!"));
 app.use('/api/auth', authRoutes);
-
-// Group routes
-app.use('/api/groups', groupRoutes);
-
-// Poll routes
-app.use('/api/groups/:groupId/polls', pollRoutes);
-
-// Event routes
-app.use('/api/groups/:groupId/events', eventRoutes);
-
-// Invite routes
 app.use('/api/invites', inviteRoutes);
-
-// Member routes
+app.use('/api/groups/:groupId/polls', pollRoutes);
+app.use('/api/groups/:groupId/events', eventRoutes);
 app.use('/api/groups/:groupId/members', memberRoutes);
-
-//#endregion ROUTES
+app.use('/api/groups', groupRoutes);
+// =================================================================
 
 // Start the server
-app.listen(PORT,async () => {
+app.listen(PORT, async () => {
     console.log(`Server is running on port ${PORT}`);
-
     try {
-        // Test query for db connection test
-        const result = await db.query('SELECT NOW()');
-        console.log('Successfully connected to PostgreSQL:', result.rows[0].now);
+        await db.query('SELECT NOW()');
+        console.log('Successfully connected to PostgreSQL');
     } catch (err) {
         console.error('Error connecting to PostgreSQL:', err);
     }

@@ -7,18 +7,20 @@ import apiClient from "../clients/apiClient.js";
 import Container from "../components/ui/Container.jsx";
 import Button from "../components/ui/Button.jsx";
 import MemberList from "../components/MemberList.jsx";
+import {formatDate} from "../utils/dateUtils.js";
+import useGroupDetailStore from "../stores/groupDetailStore.js";
 
 function GroupDetailPage() {
     const { groupId } = useParams();
+    const {group, isLoading, fetchGroupDetails} = useGroupDetailStore();
     const [inviteCode, setInviteCode] = useState('');
-    const [group, setGroup] = useState(null);
 
     useEffect(() => {
-        // TODO: fetch group details
-    }, [groupId]);
+        fetchGroupDetails(groupId).then();
+    }, [groupId, fetchGroupDetails]);
     const handleGenerateInvite = async () => {
         try {
-            const response = await apiClient.post(`/groups/${groupId}/invites`);
+            const response = await apiClient.post(`invites/groups/${groupId}`);
             setInviteCode(response.data.inviteCode);
         } catch (err) {
             console.error("Error generating invite", err);
@@ -26,12 +28,23 @@ function GroupDetailPage() {
         }
     }
 
+    if (isLoading) {
+        return <div className="text-center py-10">Loading group details...</div>
+    }
+
+    if (!group) {
+        return <div className="text-center py-10 text-red-400">Group not found</div>
+    }
+
     return (
         <Container>
             <div className="mb-8">
                 <Link to="/dashboard" className="text-sm text-blue-400 hover:underline">&larr; Back to Dashboard</Link>
-                <h1 className="text-3xl font-bold mt-2">Group Details</h1>
-                <p className="text-sm text-gray-500 mt-1">ID: {groupId}</p>
+                <h1 className="text-3xl font-bold mt-2">{group.name}</h1>
+                <p className="text-gray-400 mt-1">{group.description}</p>
+                <p className="text-xs text-gray-500 mt-2">
+                    Created by <strong>{group.created_by}</strong> on {formatDate(group.created_at)}
+                </p>
             </div>
 
             <div className="mb-6 p-4 bg-gray-800 rounded-lg">
@@ -47,11 +60,11 @@ function GroupDetailPage() {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <div className="flex flex-col gap-8">
+                <div className="lg:col-span-2">
                     <EventList groupId={groupId} />
                     <Polls groupId={groupId} />
                 </div>
-                <div className="flex flex-col gap-8">
+                <div>
                     <CreatePoll groupId={groupId} />
                     <MemberList groupId={groupId}></MemberList>
                 </div>

@@ -1,8 +1,6 @@
 const express = require('express');
 const auth = require('../middleware/auth');
 const db = require('../config/db');
-const {customAlphabet} = require('nanoid');
-
 const router = express.Router();
 
 // POST /api/groups - create a new group
@@ -56,33 +54,37 @@ router.get('/', auth, async (req, res) => {
     }
 });
 
-// POST /api/groups/:groupId/invites - create a new invite
-router.post('/:groupId/invites', auth, async (req, res) => {
-    const {groupId} = req.params;
+// GET /api/groups/:groupId - Gets group details
+router.get('/:groupId', auth, async (req, res) => {
+    const { groupId } = req.params;
     const userId = req.user.id;
 
     try {
-        // Generate a random 8-character code
-        const nanoid = customAlphabet('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', 8);
-        const code = nanoid();
+        const memberCheck = await db.query(
+            'SELECT 1 FROM group_members WHERE group_id = $1 AND user_id = $2',
+            [groupId, userId]
+        );
+        if (memberCheck.rows.length === 0) {
+            return res.status(403).json({ message: "Access denied." });
+        }
 
-        // The invite will expire in 24 hours
-        const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
-
-        await db.query('BEGIN');
-
-        await db.query(
-            'INSERT INTO invites (code, group_id, created_by, expires_at) VALUES ($1, $2, $3, $4)',
-            [code, groupId, userId, expiresAt]
+        const groupResult = await db.query(
+            `SELECT g.id, g.name, g.description, g.created_at, u.username as created_by
+             FROM groups g
+             JOIN users u ON g.created_by = u.id
+             WHERE g.id = $1`,
+            [groupId]
         );
 
-        await db.query('COMMIT');
-        res.status(201).json({message: 'Invite created successfully', inviteCode: code});
+        if (groupResult.rows.length === 0) {
+            return res.status(404).json({ message: "Group not found." });
+        }
+
+        res.json(groupResult.rows[0]);
     } catch (err) {
-        await db.query('ROLLBACK');
         console.error(err.message);
-        res.status(500).send('Unexpected Server Error');
+        res.status(500).send('Server Error');
     }
-})
+});
 
 module.exports = router;

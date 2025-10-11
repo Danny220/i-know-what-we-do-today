@@ -1,9 +1,9 @@
 // File: frontend/src/components/EventList.jsx
 import React, { useEffect } from 'react';
-import apiClient from "../clients/apiClient.js";
 import H2 from "./ui/H2.jsx";
 import useEventStore from "../stores/eventStore.js";
 import Card from "./ui/Card.jsx";
+import { formatDateTime } from "../utils/dateUtils.js";
 
 function EventList({ groupId }) {
     const {events, isLoading, fetchEvents} = useEventStore();
@@ -13,14 +13,6 @@ function EventList({ groupId }) {
 
         fetchEvents(groupId).then();
     }, [groupId, fetchEvents]);
-
-    const formatDateTime = (isoString) => {
-        if (!isoString) return 'Not specified';
-        return new Date(isoString).toLocaleString('en-US', {
-            dateStyle: 'full',
-            timeStyle: 'short',
-        });
-    };
 
     return (
         <Card>
