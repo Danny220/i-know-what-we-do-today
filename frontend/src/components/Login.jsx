@@ -41,7 +41,7 @@ function Login({setToken}) {
                     <Label>Password:</Label>
                     <Input type="password" name="password" value={formData.password} onChange={handleChange} required/>
                 </div>
-                <Button type="submit">Login</Button>
+                <Button type="submit" className="w-full">Login</Button>
             </form>
         </Card>
     )

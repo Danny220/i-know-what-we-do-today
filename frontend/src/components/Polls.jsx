@@ -3,6 +3,8 @@ import React, {  useEffect } from 'react';
 import Button from "./ui/Button.jsx";
 import H2 from "./ui/H2.jsx";
 import usePollStore from "../stores/pollStore.js";
+import H4 from "./ui/H4.jsx";
+import Card from "./ui/Card.jsx";
 
 function Polls({ groupId }) {
     const {polls, isLoading, fetchPolls, voteOnPoll, finalizePoll} = usePollStore();
@@ -31,21 +33,38 @@ function Polls({ groupId }) {
     };
 
     const renderOptions = (poll, type) => {
-        return poll.options
-            .filter(opt => opt.type === type)
-            .map(opt => (
-                <Button
-                    key={opt.id}
-                    onClick={() => handleVote(poll.id, opt.id)}
-                    className="px-3 py-1 bg-gray-600 text-sm rounded-full hover:bg-blue-600 transition-colors"
-                >
-                    {opt.value}
-                </Button>
-            ));
+        const optionsForType = poll.options.filter(opt => opt.type === type);
+        if (optionsForType.length === 0) return null;
+
+        return (
+            <div>
+                <H4>{type.charAt(0) + type.slice(1).toLowerCase()}s:</H4>
+                <div className="space-y-3">
+                    {optionsForType.map(opt => (
+                        <div key={opt.id}>
+                            <div className="flex items-center gap-3">
+                                <Button
+                                    onClick={() => handleVote(poll.id, opt.id)}
+                                    className="bg-gray-600 text-sm rounded-lg hover:bg-blue-600 transition-colors w-full">
+                                    {opt.value}
+                                </Button>
+                                <div className="flex flex-wrap items-center gap-1">
+                                    {opt.voters.map(voter => (
+                                        <span key={voter.id} className="text-xs bg-gray-500 text-white px-2 py-1 rounded-full" title={voter.username}>
+                                            {voter.username.charAt(0).toUpperCase()}
+                                        </span>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        )
     };
 
     return (
-        <div className="bg-gray-800 rounded-lg shadow-md p-6 mt-8">
+        <Card>
             <H2>📣 Open Polls</H2>
 
             {isLoading && <p className="text-gray-400">Loading polls...</p>}
@@ -70,25 +89,16 @@ function Polls({ groupId }) {
                         </div>
 
                         <div className="mt-4 space-y-3">
-                            <div>
-                                <h4 className="text-sm font-semibold text-gray-300 mb-2">Times:</h4>
-                                <div className="flex flex-wrap gap-2">{renderOptions(poll, 'TIME')}</div>
-                            </div>
-                            <div>
-                                <h4 className="text-sm font-semibold text-gray-300 mb-2">Locations:</h4>
-                                <div className="flex flex-wrap gap-2">{renderOptions(poll, 'LOCATION')}</div>
-                            </div>
-                            <div>
-                                <h4 className="text-sm font-semibold text-gray-300 mb-2">Activities:</h4>
-                                <div className="flex flex-wrap gap-2">{renderOptions(poll, 'ACTIVITY')}</div>
-                            </div>
+                            {renderOptions(poll, 'TIME')}
+                            {renderOptions(poll, 'LOCATION')}
+                            {renderOptions(poll, 'ACTIVITY')}
                         </div>
 
                         {poll.status === 'open' && (
                             <div className="mt-4 border-t border-gray-600 pt-4">
                                 <Button
                                     onClick={() => handleFinalize(poll.id)}
-                                    className="bg-green-600 hover:bg-green-700"
+                                    className="bg-green-600 hover:bg-green-700 w-full"
                                 >
                                     Finalize and Create Event
                                 </Button>
@@ -97,7 +107,7 @@ function Polls({ groupId }) {
                     </div>
                 ))}
             </div>
-        </div>
+        </Card>
     );
 }
 

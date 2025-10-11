@@ -33,7 +33,7 @@ function CreateGroup() {
                     <label htmlFor="description">Description:</label>
                     <Textarea id="description" name="description" value={groupData.description} onChange={handleChange} />
                 </div>
-                <Button type="submit">Create Group</Button>
+                <Button type="submit" className="w-full">Create Group</Button>
             </form>
         </Card>
     );

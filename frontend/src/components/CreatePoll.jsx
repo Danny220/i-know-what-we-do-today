@@ -58,7 +58,7 @@ function CreatePoll({ groupId }) {
                     <Label htmlFor="activity">Activity Options (comma-separated)</Label>
                     <Input id="activity" type="text" value={activityOptions} onChange={e => setActivityOptions(e.target.value)} placeholder="e.g., Dinner, Aperitivo" />
                 </div>
-                <Button type="submit">Create Poll</Button>
+                <Button type="submit" className="w-full">Create Poll</Button>
             </form>
         </Card>
     );

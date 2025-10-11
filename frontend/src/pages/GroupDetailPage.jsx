@@ -6,6 +6,7 @@ import CreatePoll from '../components/CreatePoll';
 import apiClient from "../clients/apiClient.js";
 import Container from "../components/ui/Container.jsx";
 import Button from "../components/ui/Button.jsx";
+import MemberList from "../components/MemberList.jsx";
 
 function GroupDetailPage() {
     const { groupId } = useParams();
@@ -34,7 +35,7 @@ function GroupDetailPage() {
             </div>
 
             <div className="mb-6 p-4 bg-gray-800 rounded-lg">
-                <Button onClick={handleGenerateInvite} className="bg-green-600 hover:bg-green-700">Generate Invite Link</Button>
+                <Button onClick={handleGenerateInvite} className="bg-green-600 hover:bg-green-700 w-full">Generate Invite Link</Button>
                 {inviteCode && (
                     <div className="mt-4 p-3 bg-gray-700 rounded">
                         <p className="text-sm text-gray-300">Share this link with your friends:</p>
@@ -46,12 +47,13 @@ function GroupDetailPage() {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <div>
+                <div className="flex flex-col gap-8">
                     <EventList groupId={groupId} />
                     <Polls groupId={groupId} />
                 </div>
-                <div>
+                <div className="flex flex-col gap-8">
                     <CreatePoll groupId={groupId} />
+                    <MemberList groupId={groupId}></MemberList>
                 </div>
             </div>
         </Container>
