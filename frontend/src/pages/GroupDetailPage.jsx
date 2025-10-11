@@ -60,11 +60,11 @@ function GroupDetailPage() {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <div className="lg:col-span-2">
+                <div className="lg:col-span-2 gap-8 grid grid-cols-1 md:grid-cols-2 gap-8">
                     <EventList groupId={groupId} />
                     <Polls groupId={groupId} />
                 </div>
-                <div>
+                <div className="lg:col-span-2 gap-8 grid grid-cols-1 md:grid-cols-2 gap-8">
                     <CreatePoll groupId={groupId} />
                     <MemberList groupId={groupId}></MemberList>
                 </div>
