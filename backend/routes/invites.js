@@ -2,6 +2,7 @@ const express = require('express');
 const auth = require('../middleware/auth');
 const db = require('../config/db');
 const {customAlphabet} = require("nanoid");
+const {createNotificationForGroup} = require("../utils/createNotification");
 
 const router = express.Router();
 
@@ -55,6 +56,10 @@ router.post('/:inviteCode/join', auth, async (req, res) => {
         await db.query('UPDATE invites SET used_at = NOW() WHERE code = $1', [inviteCode]);
 
         await db.query('COMMIT');
+
+        const groupNameResult = await db.query('SELECT name FROM groups WHERE id = $1', [groupId]);
+        const message = `${req.user.username} has joined the group "${groupNameResult.rows[0].name}"`;
+        await createNotificationForGroup(groupId, userId, message, `/groups/${groupId}`);
 
         console.log('User joined group:', groupId, ' user: ', userId);
 

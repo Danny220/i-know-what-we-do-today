@@ -8,6 +8,7 @@ DROP TABLE IF EXISTS activities;
 DROP TABLE IF EXISTS votes;
 DROP TABLE IF EXISTS events;
 DROP TABLE IF EXISTS invites;
+DROP TABLE IF EXISTS notifications;
 
 create table users (
 	id UUID primary key default gen_random_uuid(),
@@ -88,4 +89,13 @@ CREATE TABLE invites (
     expires_at TIMESTAMP WITH TIME ZONE NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     used_at TIMESTAMP WITH TIME ZONE
-)
+);
+
+CREATE TABLE notifications (
+   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+   user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+   message TEXT NOT NULL,
+   link_url VARCHAR(255),
+   is_read BOOLEAN NOT NULL DEFAULT FALSE,
+   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);

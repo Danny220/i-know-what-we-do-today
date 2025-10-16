@@ -1,6 +1,7 @@
 const express = require('express');
 const auth = require('../middleware/auth');
 const db = require('../config/db');
+const {createNotificationForGroup} = require("../utils/createNotification");
 
 const router = express.Router({mergeParams: true});
 
@@ -41,6 +42,9 @@ router.post('/', auth, async (req, res) => {
        for (const option of activityOptions) await insertOption('ACTIVITY', option);
 
        await db.query('COMMIT');
+
+       const message = `${req.user.username} has created a new poll "${title}" in your group.`;
+       await createNotificationForGroup(groupId, userId, message, `/groups/${groupId}`);
 
        res.status(201).json({message: 'Poll created successfully!', pollId});
    } catch (err) {
@@ -141,6 +145,9 @@ router.post('/:pollId/finalize', auth, async (req, res) => {
         await db.query("UPDATE polls SET status = 'closed' WHERE id = $1", [pollId]);
 
         await db.query('COMMIT');
+
+        const message = `The event "${poll.title}" has been finalized in your group!`;
+        await createNotificationForGroup(poll.group_id, userId, message, `/groups/${poll.group_id}`);
 
         res.status(200).json({ message: 'Event created successfully' });
 

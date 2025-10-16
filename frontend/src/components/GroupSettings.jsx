@@ -47,7 +47,7 @@ function GroupSettings({group}) {
     };
 
     return (
-        <div className="bg-gray-800 rounded-lg shadow-md p-6 mt-8">
+        <div className="bg-gray-800 rounded-lg shadow-md p-6">
             <H2>⚙️ Group Settings</H2>
 
             <form onSubmit={handleUpdate} className="space-y-4">
