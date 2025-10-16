@@ -87,4 +87,64 @@ router.get('/:groupId', auth, async (req, res) => {
     }
 });
 
+// PUT /api/groups/:groupId - update group details
+router.put('/:groupId', auth, async (req, res) => {
+    const { groupId } = req.params;
+    const { name, description } = req.body;
+    const userId = req.user.id;
+
+    try {
+        const adminCheck = await db.query(
+            "SELECT 1 FROM group_members WHERE group_id = $1 AND user_id = $2 AND role = 'admin'",
+            [groupId, userId]
+        );
+        if (adminCheck.rows.length === 0) {
+            return res.status(403).json({ message: "Access denied, only an admin of the group can edit the group" });
+        }
+
+        await db.query('BEGIN');
+
+        const updatedGroup = await db.query(
+            'UPDATE groups SET name = $1, description = $2 WHERE id = $3 RETURNING id, name, description',
+            [name, description, groupId]
+        );
+
+        await db.query('COMMIT');
+
+        res.json(updatedGroup.rows[0]);
+    } catch (err) {
+        await db.query('ROLLBACK');
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
+// DELETE /api/groups/:groupId - delete a group
+router.delete('/:groupId', auth, async (req, res) => {
+    const { groupId } = req.params;
+    const userId = req.user.id;
+
+    try {
+        const adminCheck = await db.query(
+            "SELECT 1 FROM group_members WHERE group_id = $1 AND user_id = $2 AND role = 'admin'",
+            [groupId, userId]
+        );
+        if (adminCheck.rows.length === 0) {
+            return res.status(403).json({ message: "Access denied, only an admin of the group can delete the group" });
+        }
+
+        await db.query('BEGIN');
+
+        await db.query('DELETE FROM groups WHERE id = $1', [groupId]);
+
+        await db.query('COMMIT');
+
+        res.status(200).json({ message: "Group deleted successfully" });
+    } catch (err) {
+        await db.query('ROLLBACK');
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+})
+
 module.exports = router;
