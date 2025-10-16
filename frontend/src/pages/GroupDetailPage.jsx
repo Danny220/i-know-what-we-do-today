@@ -9,6 +9,7 @@ import Button from "../components/ui/Button.jsx";
 import MemberList from "../components/MemberList.jsx";
 import {formatDate} from "../utils/dateUtils.js";
 import useGroupDetailStore from "../stores/groupDetailStore.js";
+import GroupSettings from "../components/GroupSettings.jsx";
 
 function GroupDetailPage() {
     const { groupId } = useParams();
@@ -60,13 +61,14 @@ function GroupDetailPage() {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <div className="lg:col-span-2 gap-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="lg:col-span-2 gap-8 grid grid-cols-1 md:grid-cols-2">
                     <EventList groupId={groupId} />
                     <Polls groupId={groupId} />
                 </div>
-                <div className="lg:col-span-2 gap-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="lg:col-span-2 gap-8 grid grid-cols-1 md:grid-cols-2">
                     <CreatePoll groupId={groupId} />
                     <MemberList groupId={groupId}></MemberList>
+                    {group && <GroupSettings group={group} />}
                 </div>
             </div>
         </Container>

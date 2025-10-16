@@ -22,6 +22,36 @@ const useGroupDetailStore = create(set => ({
             console.error('Error fetching group details:', error);
             set({isLoading: false, group: null});
         }
+    },
+
+    /**
+     * Updates the group details in the store. This action is used when the user makes changes to the group details.
+     * @param groupId
+     * @param groupData
+     * @returns {Promise<void>}
+     */
+    updateGroup: async (groupId, groupData) => {
+        try {
+            const response = await apiClient.put(`/groups/${groupId}`, groupData);
+            set({group: response.data});
+        } catch (error) {
+            console.error('Error updating group:', error);
+            throw error;
+        }
+    },
+
+    /**
+     * Removes the group from the store.
+     * @param groupId - The ID of the group to remove.
+     * @returns {Promise<void>} - A promise that resolves when the group is removed.
+     */
+    deleteGroup: async (groupId) => {
+        try {
+            await apiClient.delete(`/groups/${groupId}`);
+        } catch (error) {
+            console.error('Error deleting group:', error);
+            throw error;
+        }
     }
 }));
 
