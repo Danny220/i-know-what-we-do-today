@@ -7,6 +7,7 @@ import GroupDetailPage from "./pages/GroupDetailPage.jsx";
 import JoinPage from "./pages/JoinPage.jsx";
 import MenuLink from "./components/ui/MenuLink.jsx";
 import Button from "./components/ui/Button.jsx";
+import Notifications from "./components/Notifications.jsx";
 
 function App() {
     const [token, setToken] = useState(localStorage.getItem('token'));
@@ -31,7 +32,8 @@ function App() {
                         <div className="flex items-center justify-between h-16">
                             <MenuLink to="/">I Know What We'll Do Today</MenuLink>
                             <p className="font-bold text-xl text-orange-700">!!! PRE ALPHA !!!</p>
-                            <div>
+                            <div className="flex items-center gap-4">
+                                {token && <Notifications />}
                                 {token && (
                                     <Button
                                         onClick={handleLogout}

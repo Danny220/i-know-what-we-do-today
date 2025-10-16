@@ -9,6 +9,7 @@ const pollRoutes = require('./routes/polls');
 const eventRoutes = require('./routes/events');
 const inviteRoutes = require('./routes/invites');
 const memberRoutes = require('./routes/members');
+const notificationRoutes = require('./routes/notifications');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -27,6 +28,7 @@ app.use('/api/groups/:groupId/polls', pollRoutes);
 app.use('/api/groups/:groupId/events', eventRoutes);
 app.use('/api/groups/:groupId/members', memberRoutes);
 app.use('/api/groups', groupRoutes);
+app.use('/api/notifications', notificationRoutes);
 // =================================================================
 
 // Start the server
