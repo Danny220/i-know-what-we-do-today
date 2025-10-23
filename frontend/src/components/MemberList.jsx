@@ -4,6 +4,7 @@ import {jwtDecode} from 'jwt-decode';
 import Card from "./ui/Card.jsx";
 import H2 from "./ui/H2.jsx";
 import Button from "./ui/Button.jsx";
+import {Link} from "react-router-dom";
 
 function MemberList({groupId}) {
     const {members, isLoading, fetchMembers, removeMember} = useMemberStore();
@@ -37,7 +38,9 @@ function MemberList({groupId}) {
                 <ul className="space-y-3">
                     {members.map(member => <li key={member.id} className="flex items-center justify-between p-3 bg-gray-700 rounded-lg">
                         <div>
-                            <span className="font-semibold text-white">{member.username}</span>
+                            <Link to={`/profile/${member.id}`} className="font-semibold text-white hover:underline">
+                                {member.username}
+                            </Link>
                             {member.role === 'admin' && (
                                 <span className="ml-2 text-xs font-bold bg-yellow-400 text-yellow-900 px-2 py-1 rounded-full">Admin</span>
                             )}
