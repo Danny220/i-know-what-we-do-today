@@ -9,6 +9,7 @@ DROP TABLE IF EXISTS votes;
 DROP TABLE IF EXISTS events;
 DROP TABLE IF EXISTS invites;
 DROP TABLE IF EXISTS notifications;
+DROP TABLE IF EXISTS profiles;
 
 create table users (
 	id UUID primary key default gen_random_uuid(),
@@ -99,3 +100,30 @@ CREATE TABLE notifications (
    is_read BOOLEAN NOT NULL DEFAULT FALSE,
    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
+
+CREATE TABLE profiles (
+    user_id UUID PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+    bio TEXT,
+    avatar_url VARCHAR(255)
+);
+
+CREATE OR REPLACE FUNCTION create_public_profile_for_user()
+RETURNS TRIGGER AS $$
+BEGIN
+    INSERT INTO profiles (user_id)
+    VALUES (NEW.id);
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER ;
+
+CREATE TRIGGER on_user_created
+    AFTER INSERT ON users
+    FOR EACH ROW
+    EXECUTE PROCEDURE create_public_profile_for_user();
+
+
+INSERT INTO profiles (user_id)
+SELECT id
+FROM users
+         LEFT JOIN profiles ON users.id = profiles.user_id
+WHERE profiles.user_id IS NULL;

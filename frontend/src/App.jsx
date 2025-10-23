@@ -8,6 +8,7 @@ import JoinPage from "./pages/JoinPage.jsx";
 import MenuLink from "./components/ui/MenuLink.jsx";
 import Button from "./components/ui/Button.jsx";
 import Notifications from "./components/Notifications.jsx";
+import ProfilePage from "./pages/ProfilePage.jsx";
 
 function App() {
     const [token, setToken] = useState(localStorage.getItem('token'));
@@ -60,6 +61,7 @@ function App() {
                     <Route path="/join/:inviteCode" element={
                         <JoinPage />
                     }/>
+                    <Route path="/profile/:userId" element={token ? <ProfilePage /> : <Navigate to="/" />}/>
                 </Routes>
             </div>
         </Router>
