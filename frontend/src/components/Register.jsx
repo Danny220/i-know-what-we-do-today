@@ -5,6 +5,7 @@ import Input from "./ui/Input.jsx";
 import Button from "./ui/Button.jsx";
 import Card from "./ui/Card.jsx";
 import H2 from "./ui/H2.jsx";
+import toast from "react-hot-toast";
 
 function Register() {
     const [formData, setFormData] = useState({
@@ -20,12 +21,14 @@ function Register() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        const registerToast = toast.loading('Loading...');
+
         try {
             await apiClient.post('/auth/register', formData);
-            alert('Registration successful! You can now log in.');
+            toast.success('Registration successful! You can now log in.', {id: registerToast});
         } catch (error) {
             console.error("Error occurred during registration!", error);
-            alert('Error occurred during registration!');
+            toast.error('Error occurred during registration!', {id: registerToast} );
         }
     };
 

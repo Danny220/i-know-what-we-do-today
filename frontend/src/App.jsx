@@ -10,6 +10,7 @@ import Button from "./components/ui/Button.jsx";
 import Notifications from "./components/Notifications.jsx";
 import ProfilePage from "./pages/ProfilePage.jsx";
 import GlobalLoader from "./components/ui/GlobalLoader.jsx";
+import {Toaster} from "react-hot-toast";
 
 function App() {
     const [token, setToken] = useState(localStorage.getItem('token'));
@@ -29,6 +30,12 @@ function App() {
     return (
         <Router>
             <div className="bg-gray-900 text-white min-h-screen">
+                <Toaster position="top-right" toastOptions={{
+                    style: {
+                        background: '#333',
+                        color: '#fff'
+                    }
+                }} />
                 <GlobalLoader />
 
                 <nav className="bg-gray-800 shadow-lg">

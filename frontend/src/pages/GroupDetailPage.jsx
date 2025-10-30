@@ -10,6 +10,7 @@ import MemberList from "../components/MemberList.jsx";
 import {formatDate} from "../utils/dateUtils.js";
 import useGroupDetailStore from "../stores/groupDetailStore.js";
 import GroupSettings from "../components/GroupSettings.jsx";
+import toast from "react-hot-toast";
 
 function GroupDetailPage() {
     const { groupId } = useParams();
@@ -20,12 +21,15 @@ function GroupDetailPage() {
         fetchGroupDetails(groupId).then();
     }, [groupId, fetchGroupDetails]);
     const handleGenerateInvite = async () => {
+        const inviteToast = toast.loading('Generating invite link...');
+
         try {
             const response = await apiClient.post(`invites/groups/${groupId}`);
             setInviteCode(response.data.inviteCode);
+            toast.dismiss(inviteToast);
         } catch (err) {
             console.error("Error generating invite", err);
-            alert('Error generating invite');
+            toast.error('Error generating invite', {id: inviteToast});
         }
     }
 

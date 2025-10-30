@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import Input from './ui/Input';
 import Button from './ui/Button';
-import apiClient from "../clients/apiClient.js";
 import Card from "./ui/Card.jsx";
 import H2 from "./ui/H2.jsx";
 import Label from "./ui/Label.jsx";
 import usePollStore from "../stores/pollStore.js";
+import toast from "react-hot-toast";
 
 function CreatePoll({ groupId }) {
     const createPoll = usePollStore(state => state.createPoll);
@@ -17,6 +17,8 @@ function CreatePoll({ groupId }) {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        const pollToast = toast.loading('Creating poll...');
+
         const pollData = {
             title,
             timeOptions: timeOptions.split(',').map(s => s.trim()).filter(s => s),
@@ -26,7 +28,7 @@ function CreatePoll({ groupId }) {
 
         try {
             await createPoll(groupId, pollData);
-            alert('Poll created successfully!');
+            toast.success('Poll created successfully!', {id: pollToast});
             // Clear the form
             setTitle('');
             setTimeOptions('');
@@ -34,7 +36,7 @@ function CreatePoll({ groupId }) {
             setActivityOptions('');
         } catch (error) {
             console.error('Error creating poll', error);
-            alert('Error: ' + (error.response?.data?.message || 'Please try again.'));
+            toast.error(`Error: ${(error.response?.data?.message || 'Please try again.')}`);
         }
     };
 

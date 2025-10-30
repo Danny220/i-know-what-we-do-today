@@ -7,6 +7,7 @@ import Input from "./ui/Input.jsx";
 import Button from "./ui/Button.jsx";
 import H2 from "./ui/H2.jsx";
 import Label from "./ui/Label.jsx";
+import toast from "react-hot-toast";
 
 function GroupSettings({group}) {
     const { updateGroup, deleteGroup } = useGroupDetailStore();
@@ -26,22 +27,27 @@ function GroupSettings({group}) {
 
     const handleUpdate = async (e) => {
         e.preventDefault();
+
+        const updateGroupToast = toast.loading('Updating group...');
+
         try {
             await updateGroup(group.id, {name, description});
-            alert("Group updated successfully!");
+            toast.success("Group updated successfully!", {id: updateGroupToast});
         } catch {
-            alert("Failed to update group.");
+            toast.error("Failed to update group.", {id: updateGroupToast} );
         }
     };
 
     const handleDelete = async () => {
         if (window.confirm("Are you sure you want to delete this group?")) {
+            const deleteGroupToast = toast.loading('Deleting group...');
+
             try {
                 await deleteGroup(group.id);
                 navigate("/dashboard");
-                alert("Group deleted successfully!");
+                toast.success("Group deleted successfully!", {id: deleteGroupToast} );
             } catch {
-                alert("Failed to delete group.");
+                toast.error("Failed to delete group.", {id: deleteGroupToast} );
             }
         }
     };
