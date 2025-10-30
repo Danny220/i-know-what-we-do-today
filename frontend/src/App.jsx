@@ -9,6 +9,7 @@ import MenuLink from "./components/ui/MenuLink.jsx";
 import Button from "./components/ui/Button.jsx";
 import Notifications from "./components/Notifications.jsx";
 import ProfilePage from "./pages/ProfilePage.jsx";
+import GlobalLoader from "./components/ui/GlobalLoader.jsx";
 
 function App() {
     const [token, setToken] = useState(localStorage.getItem('token'));
@@ -28,6 +29,8 @@ function App() {
     return (
         <Router>
             <div className="bg-gray-900 text-white min-h-screen">
+                <GlobalLoader />
+
                 <nav className="bg-gray-800 shadow-lg">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="flex items-center justify-between h-16">
