@@ -5,6 +5,7 @@ import H2 from "./ui/H2.jsx";
 import usePollStore from "../stores/pollStore.js";
 import H4 from "./ui/H4.jsx";
 import Card from "./ui/Card.jsx";
+import toast from "react-hot-toast";
 
 function Polls({ groupId }) {
     const {polls, isLoading, fetchPolls, voteOnPoll, finalizePoll} = usePollStore();
@@ -14,21 +15,27 @@ function Polls({ groupId }) {
     }, [groupId, fetchPolls]);
 
     const handleVote = async (pollId, optionId) => {
+        const voteToast = toast.loading('Submitting vote...');
+
         try {
             await voteOnPoll(groupId, pollId, optionId);
+
+            toast.success('Vote submitted successfully!', {id: voteToast});
         } catch (error) {
             console.error("Error while voting", error);
-            alert('Vote failed.');
+            toast.error('Vote failed.', {id: voteToast});
         }
     };
 
     const handleFinalize = async (pollId) => {
+        const finalizeToast = toast.loading('Finalizing poll...');
+
         try {
             await finalizePoll(groupId, pollId);
-            alert('Poll finalized successfully and event created!');
+            toast.success('Poll finalized successfully and event created!', {id: finalizeToast} );
         } catch (error) {
             console.error("Error during finalization", error);
-            alert('Finalization failed: ' + (error.response?.data?.message || 'Please try again.'));
+            toast.error(`Finalization failed: ${error.response?.data?.message || 'Please try again.'}`, {id: finalizeToast}  );
         }
     };
 

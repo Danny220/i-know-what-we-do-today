@@ -5,6 +5,7 @@ import Card from "./ui/Card.jsx";
 import H2 from "./ui/H2.jsx";
 import Button from "./ui/Button.jsx";
 import {Link} from "react-router-dom";
+import toast from "react-hot-toast";
 
 function MemberList({groupId}) {
     const {members, isLoading, fetchMembers, removeMember} = useMemberStore();
@@ -19,11 +20,14 @@ function MemberList({groupId}) {
 
     const handleRemove = async (memberId) => {
         if (window.confirm('Are you sure you want to remove this member?')) {
+            const removeMemberToast = toast.loading('Removing member...');
+
             try {
                 await removeMember(groupId, memberId);
+                toast.dismiss(removeMemberToast);
             } catch (err) {
                 console.error('Error removing member:', err);
-                alert(err.response?.data?.message || 'Failed to remove member');
+                toast.error(err.response?.data?.message || 'Failed to remove member', {id: removeMemberToast});
             }
         }
     };

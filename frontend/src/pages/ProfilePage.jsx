@@ -7,6 +7,7 @@ import Button from "../components/ui/Button.jsx";
 import H1 from "../components/ui/H1.jsx";
 import H2 from "../components/ui/H2.jsx";
 import Textarea from "../components/ui/Textarea.jsx";
+import toast from "react-hot-toast";
 
 function ProfilePage() {
     const {userId} = useParams();
@@ -29,12 +30,14 @@ function ProfilePage() {
     }, [profile]);
 
     const handleSave = async () => {
+        const saveProfileToast = toast.loading('Updating profile...');
+
         try {
             await updateProfile({bio});
             setIsEditing(false);
-            alert('Profile updated successfully!');
+            toast.success('Profile updated successfully!', {id: saveProfileToast});
         } catch {
-            alert('Failed to update profile. Please try again.');
+            toast.error('Failed to update profile. Please try again.', {id: saveProfileToast});
         }
     };
     const renderPage = () => {

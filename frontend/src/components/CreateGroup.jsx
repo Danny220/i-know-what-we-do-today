@@ -5,6 +5,7 @@ import Input from "./ui/Input.jsx";
 import Textarea from "./ui/Textarea.jsx";
 import Button from "./ui/Button.jsx";
 import useGroupStore from "../stores/groupStore.js";
+import toast from "react-hot-toast";
 
 function CreateGroup() {
     const [groupData, setGroupData] = useState({name: '', description: ''});
@@ -16,9 +17,20 @@ function CreateGroup() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        await createGroup(groupData);
-        alert(`Group "${groupData.name}" created successfully!`);
-        setGroupData({name: '', description: ''});
+
+        const creationToast = toast.loading('Creating group...');
+
+        try {
+            await createGroup(groupData);
+
+            toast.success(`Group "${groupData.name}" created!`, {id: creationToast});
+
+            setGroupData({name: '', description: ''});
+        } catch (error) {
+            console.error('Error creating group', error);
+
+            toast.error('Failed to create group.', {id: creationToast} );
+        }
     };
 
     return (
