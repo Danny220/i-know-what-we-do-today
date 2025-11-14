@@ -23,7 +23,7 @@ create table groups (
 	id UUID primary key default gen_random_uuid(),
 	name VARCHAR(100) not null,
 	description TEXT,
-	created_by UUID not null references users(id), 
+	created_by UUID not null references users(id),
 	created_at timestamp with TIME zone default NOW()
 );
 
@@ -37,7 +37,7 @@ create table group_members (
 
 create table activities (
 	id uuid primary key default gen_random_uuid(),
-	name varchar(100) not null unique 
+	name varchar(100) not null unique
 );
 
 create table locations (
@@ -60,7 +60,7 @@ create table polls (
 create table poll_options (
 	id uuid primary key default gen_random_uuid(),
 	poll_id uuid not null references polls(id) on delete cascade,
-	type varchar(20) not null, 
+	type varchar(20) not null,
 	value text not null
 );
 
@@ -127,3 +127,11 @@ SELECT id
 FROM users
          LEFT JOIN profiles ON users.id = profiles.user_id
 WHERE profiles.user_id IS NULL;
+
+CREATE TABLE group_messages (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    group_id UUID NOT NULL REFERENCES groups(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    content TEXT NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
