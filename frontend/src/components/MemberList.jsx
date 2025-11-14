@@ -7,6 +7,7 @@ import Button from "./ui/Button.jsx";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import ConfirmationModal from "./ui/ConfirmationModal.jsx";
+import MemberListSkeleton from "./skeletons/MemberListSkeleton.jsx";
 
 function MemberList({ groupId }) {
   const { members, isLoading, fetchMembers, removeMember } = useMemberStore();
@@ -41,44 +42,57 @@ function MemberList({ groupId }) {
   const currentUserIsAdmin =
     members.find((m) => m.id === currentUser?.id)?.role === "admin";
 
+  const renderContent = () => {
+    if (isLoading) {
+      return (
+        <div className="space-y-3">
+          <MemberListSkeleton />
+          <MemberListSkeleton />
+          <MemberListSkeleton />
+        </div>
+      );
+    } else {
+      return (
+        <ul className="space-y-3">
+          {members.map((member) => (
+            <li
+              key={member.id}
+              className="flex items-center justify-between p-3 bg-gray-700 rounded-lg"
+            >
+              <div>
+                <Link
+                  to={`/profile/${member.id}`}
+                  className="font-semibold text-white hover:underline"
+                >
+                  {member.username}
+                </Link>
+                {member.role === "admin" && (
+                  <span className="ml-2 text-xs font-bold bg-yellow-400 text-yellow-900 px-2 py-1 rounded-full">
+                    Admin
+                  </span>
+                )}
+              </div>
+              {currentUserIsAdmin && (
+                <Button
+                  onClick={() => handleRemoveMemberClick(member.id)}
+                  className="text-xs py-1 px-3 bg-red-600 hover:bg-red-700 text-white"
+                >
+                  Remove
+                </Button>
+              )}
+            </li>
+          ))}
+        </ul>
+      );
+    }
+  };
+
   return (
     <>
       <Card>
         <H2>👥 Group Members</H2>
-        {isLoading ? (
-          <p className="text-gray-400">Loading members...</p>
-        ) : (
-          <ul className="space-y-3">
-            {members.map((member) => (
-              <li
-                key={member.id}
-                className="flex items-center justify-between p-3 bg-gray-700 rounded-lg"
-              >
-                <div>
-                  <Link
-                    to={`/profile/${member.id}`}
-                    className="font-semibold text-white hover:underline"
-                  >
-                    {member.username}
-                  </Link>
-                  {member.role === "admin" && (
-                    <span className="ml-2 text-xs font-bold bg-yellow-400 text-yellow-900 px-2 py-1 rounded-full">
-                      Admin
-                    </span>
-                  )}
-                </div>
-                {currentUserIsAdmin && (
-                  <Button
-                    onClick={() => handleRemoveMemberClick(member.id)}
-                    className="text-xs py-1 px-3 bg-red-600 hover:bg-red-700 text-white"
-                  >
-                    Remove
-                  </Button>
-                )}
-              </li>
-            ))}
-          </ul>
-        )}
+
+        {renderContent()}
       </Card>
 
       <ConfirmationModal
