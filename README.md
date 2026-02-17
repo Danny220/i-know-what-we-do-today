@@ -1,3 +1,9 @@
+---
+
+# WARNING
+# MIGRATED TO https://codeberg.org/Danny220/i-know-what-we-do-today
+---
+
 # I Know What We'll Do Today
 
 A full-stack web application designed to help groups of friends organize their outings through a collaborative polling system.
