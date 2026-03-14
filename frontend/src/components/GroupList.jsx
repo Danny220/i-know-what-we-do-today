@@ -1,17 +1,12 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 import Card from "./ui/Card.jsx";
 import H2 from "./ui/H2.jsx";
-import useGroupStore from "../stores/groupStore.js";
+import { useGroups } from "../hooks/useGroups.js";
 import GroupListSkeleton from "./skeletons/GroupListSkeleton.jsx";
 
 function GroupList() {
-  // Use store
-  const { groups, isLoading, fetchGroups } = useGroupStore();
-
-  useEffect(() => {
-    fetchGroups();
-  }, [fetchGroups]);
+  const { data: groups = [], isLoading, isError } = useGroups();
 
   const renderContent = () => {
     if (isLoading) {
@@ -22,6 +17,10 @@ function GroupList() {
           <GroupListSkeleton />
         </div>
       );
+    }
+
+    if (isError) {
+      return <p className="text-red-400">Failed to load groups.</p>;
     }
 
     if (groups.length === 0) {

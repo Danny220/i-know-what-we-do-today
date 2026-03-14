@@ -1,8 +1,8 @@
 import React from "react";
 
-function Card({children, className, ...props}) {
+function Card({children, className = '', ...props}) {
     return (
-        <div className={`w-full p-8 space-y-6 bg-gray-800 rounded-lg shadow-md ${className}`} {...props}>{children}</div>
+        <div className={`w-full p-8 bg-gray-800 border border-gray-700 rounded-xl shadow-lg ${className}`} {...props}>{children}</div>
     );
 }
 
