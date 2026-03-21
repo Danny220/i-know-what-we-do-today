@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import Polls from "../components/Polls";
 import EventList from "../components/EventList";
@@ -8,19 +8,16 @@ import Container from "../components/ui/Container.jsx";
 import Button from "../components/ui/Button.jsx";
 import MemberList from "../components/MemberList.jsx";
 import { formatDate } from "../utils/dateUtils.js";
-import useGroupDetailStore from "../stores/groupDetailStore.js";
 import GroupSettings from "../components/GroupSettings.jsx";
 import toast from "react-hot-toast";
 import MessageBoard from "../components/MessageBoard.jsx";
+import { useGroupDetails } from "../hooks/useGroupDetail.js";
 
 function GroupDetailPage() {
   const { groupId } = useParams();
-  const { group, isLoading, fetchGroupDetails } = useGroupDetailStore();
+  const { data: groupDetail, isLoading, isError } = useGroupDetails(groupId);
   const [inviteCode, setInviteCode] = useState("");
 
-  useEffect(() => {
-    fetchGroupDetails(groupId).then();
-  }, [groupId, fetchGroupDetails]);
   const handleGenerateInvite = async () => {
     const inviteToast = toast.loading("Generating invite link...");
 
@@ -34,11 +31,19 @@ function GroupDetailPage() {
     }
   };
 
+  if (isError) {
+    return (
+      <div className="text-center py-10 text-red-400">
+        Error loading group details
+      </div>
+    );
+  }
+
   if (isLoading) {
     return <div className="text-center py-10">Loading group details...</div>;
   }
 
-  if (!group) {
+  if (!groupDetail) {
     return (
       <div className="text-center py-10 text-red-400">Group not found</div>
     );
@@ -50,11 +55,11 @@ function GroupDetailPage() {
         <Link to="/dashboard" className="text-sm text-blue-400 hover:underline">
           &larr; Back to Dashboard
         </Link>
-        <h1 className="text-3xl font-bold mt-2">{group.name}</h1>
-        <p className="text-gray-400 mt-1">{group.description}</p>
+        <h1 className="text-3xl font-bold mt-2">{groupDetail.name}</h1>
+        <p className="text-gray-400 mt-1">{groupDetail.description}</p>
         <p className="text-xs text-gray-500 mt-2">
-          Created by <strong>{group.created_by}</strong> on{" "}
-          {formatDate(group.created_at)}
+          Created by <strong>{groupDetail.created_by}</strong> on{" "}
+          {formatDate(groupDetail.created_at)}
         </p>
       </div>
 
@@ -86,7 +91,7 @@ function GroupDetailPage() {
         <div className="lg:col-span-2 gap-8 grid grid-cols-1 md:grid-cols-2">
           <CreatePoll groupId={groupId} />
           <MemberList groupId={groupId}></MemberList>
-          {group && <GroupSettings group={group} />}
+          {groupDetail && <GroupSettings group={groupDetail} />}
         </div>
       </div>
     </Container>

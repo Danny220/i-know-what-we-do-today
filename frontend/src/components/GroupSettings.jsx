@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import useGroupDetailStore from "../stores/groupDetailStore.js";
 import useMemberStore from "../stores/memberStore.js";
 import { jwtDecode } from "jwt-decode";
 import Input from "./ui/Input.jsx";
@@ -9,9 +8,12 @@ import H2 from "./ui/H2.jsx";
 import Label from "./ui/Label.jsx";
 import toast from "react-hot-toast";
 import ConfirmationModal from "./ui/ConfirmationModal.jsx";
+import { useDeleteGroup, useUpdateGroup } from "../hooks/useGroupDetail.js";
 
 function GroupSettings({ group }) {
-  const { updateGroup, deleteGroup } = useGroupDetailStore();
+  const { mutateAsync: updateGroup, isUpdatePending } = useUpdateGroup();
+  const { mutateAsync: deleteGroup, isDeletePending } = useDeleteGroup();
+
   const { members } = useMemberStore();
   const navigate = useNavigate();
 
@@ -34,7 +36,8 @@ function GroupSettings({ group }) {
     const updateGroupToast = toast.loading("Updating group...");
 
     try {
-      await updateGroup(group.id, { name, description });
+      const groupData = { name, description };
+      await updateGroup({ groupId: group.id, groupData });
       toast.success("Group updated successfully!", { id: updateGroupToast });
     } catch {
       toast.error("Failed to update group.", { id: updateGroupToast });
@@ -80,7 +83,9 @@ function GroupSettings({ group }) {
               onChange={(e) => setDescription(e.target.value)}
             />
           </div>
-          <Button type="submit">Save Changes</Button>
+          <Button type="submit" disabled={isUpdatePending}>
+            Save Changes
+          </Button>
         </form>
 
         <div className="mt-8 pt-4 border-t border-red-500/30">
@@ -100,6 +105,7 @@ function GroupSettings({ group }) {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onConfirm={handleConfirmDelete}
+        disabled={isDeletePending}
         title="Delete Group"
         message={`Are you sure you want to permanently delete "${group.name}"? This action cannot be undone.`}
       />
