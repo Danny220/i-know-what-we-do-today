@@ -1,19 +1,12 @@
-// File: frontend/src/components/EventList.jsx
-import React, { useEffect } from "react";
+import React from "react";
 import H2 from "./ui/H2.jsx";
-import useEventStore from "../stores/eventStore.js";
 import Card from "./ui/Card.jsx";
 import { formatDateTime } from "../utils/dateUtils.js";
 import EventListSkeleton from "./skeletons/EventListSkeleton.jsx";
+import { useEvents } from "../hooks/useEvents.js";
 
 function EventList({ groupId }) {
-  const { events, isLoading, fetchEvents } = useEventStore();
-
-  useEffect(() => {
-    if (!groupId) return;
-
-    fetchEvents(groupId).then();
-  }, [groupId, fetchEvents]);
+  const { data: events = [], isLoading, isError } = useEvents(groupId);
 
   const renderContent = () => {
     if (isLoading) {
@@ -48,6 +41,10 @@ function EventList({ groupId }) {
       );
     }
   };
+
+  if (isError) {
+    return <p className="text-red-400">Failed to load events.</p>;
+  }
 
   return (
     <Card>
