@@ -1,26 +1,23 @@
 // File: frontend/src/components/Polls.jsx
-import React, { useEffect } from "react";
+import React from "react";
 import Button from "./ui/Button.jsx";
 import H2 from "./ui/H2.jsx";
-import usePollStore from "../stores/pollStore.js";
 import H4 from "./ui/H4.jsx";
 import Card from "./ui/Card.jsx";
 import toast from "react-hot-toast";
 import PollSkeleton from "./skeletons/PollSkeleton.jsx";
+import { useFinalizePoll, usePolls, useVoteOnPoll } from "../hooks/usePolls.js";
 
 function Polls({ groupId }) {
-  const { polls, isLoading, fetchPolls, voteOnPoll, finalizePoll } =
-    usePollStore();
-
-  useEffect(() => {
-    fetchPolls(groupId).then();
-  }, [groupId, fetchPolls]);
+  const { data: polls = [], isPollsLoading, isPollsError } = usePolls(groupId);
+  const { mutateAsync: voteOnPoll, isVotePending } = useVoteOnPoll();
+  const { mutateAsync: finalizePoll, isFinalizePending } = useFinalizePoll();
 
   const handleVote = async (pollId, optionId) => {
     const voteToast = toast.loading("Submitting vote...");
 
     try {
-      await voteOnPoll(groupId, pollId, optionId);
+      await voteOnPoll({ groupId, pollId, optionId });
 
       toast.success("Vote submitted successfully!", { id: voteToast });
     } catch (error) {
@@ -33,7 +30,7 @@ function Polls({ groupId }) {
     const finalizeToast = toast.loading("Finalizing poll...");
 
     try {
-      await finalizePoll(groupId, pollId);
+      await finalizePoll({ groupId, pollId });
       toast.success("Poll finalized successfully and event created!", {
         id: finalizeToast,
       });
@@ -59,6 +56,7 @@ function Polls({ groupId }) {
               <div className="flex items-center gap-3">
                 <Button
                   onClick={() => handleVote(poll.id, opt.id)}
+                  disabled={isVotePending}
                   className="bg-gray-600 text-sm rounded-lg hover:bg-blue-600 transition-colors w-full"
                 >
                   {opt.value}
@@ -83,63 +81,67 @@ function Polls({ groupId }) {
   };
 
   const renderContent = () => {
-    if (isLoading) {
+    if (isPollsError) {
+      return <p className="text-red-400">Failed to load polls.</p>;
+    }
+
+    if (isPollsLoading) {
       return (
         <div className="space-y-6">
           <PollSkeleton />
         </div>
       );
-    } else {
-      return (
-        <div className="space-y-6">
-          {polls.map((poll) => (
-            <div key={poll.id} className="bg-gray-700 p-4 rounded-lg">
-              <div className="flex justify-between items-start">
-                <div>
-                  <h3 className="font-bold text-lg text-white">{poll.title}</h3>
-                  <p className="text-sm text-gray-400">{poll.description}</p>
-                </div>
-                <span
-                  className={`text-xs font-semibold px-2 py-1 rounded-full ${
-                    poll.status === "open"
-                      ? "bg-green-200 text-green-800"
-                      : "bg-gray-500 text-gray-100"
-                  }`}
-                >
-                  {poll.status}
-                </span>
-              </div>
-
-              <div className="mt-4 space-y-3">
-                {renderOptions(poll, "TIME")}
-                {renderOptions(poll, "LOCATION")}
-                {renderOptions(poll, "ACTIVITY")}
-              </div>
-
-              {poll.status === "open" && (
-                <div className="mt-4 border-t border-gray-600 pt-4">
-                  <Button
-                    onClick={() => handleFinalize(poll.id)}
-                    className="bg-green-600 hover:bg-green-700 w-full"
-                  >
-                    Finalize and Create Event
-                  </Button>
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-      );
     }
+    return (
+      <div className="space-y-6">
+        {polls.map((poll) => (
+          <div key={poll.id} className="bg-gray-700 p-4 rounded-lg">
+            <div className="flex justify-between items-start">
+              <div>
+                <h3 className="font-bold text-lg text-white">{poll.title}</h3>
+                <p className="text-sm text-gray-400">{poll.description}</p>
+              </div>
+              <span
+                className={`text-xs font-semibold px-2 py-1 rounded-full ${
+                  poll.status === "open"
+                    ? "bg-green-200 text-green-800"
+                    : "bg-gray-500 text-gray-100"
+                }`}
+              >
+                {poll.status}
+              </span>
+            </div>
+
+            <div className="mt-4 space-y-3">
+              {renderOptions(poll, "TIME")}
+              {renderOptions(poll, "LOCATION")}
+              {renderOptions(poll, "ACTIVITY")}
+            </div>
+
+            {poll.status === "open" && (
+              <div className="mt-4 border-t border-gray-600 pt-4">
+                <Button
+                  onClick={() => handleFinalize(poll.id)}
+                  className="bg-green-600 hover:bg-green-700 w-full"
+                  disabled={isFinalizePending}
+                >
+                  Finalize and Create Event
+                </Button>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    );
   };
 
   return (
     <Card>
       <H2>📣 Open Polls</H2>
 
-      {isLoading && <p className="text-gray-400">Loading polls...</p>}
+      {isPollsLoading && <p className="text-gray-400">Loading polls...</p>}
 
-      {!isLoading && polls.length === 0 && (
+      {!isPollsLoading && polls.length === 0 && (
         <p className="text-gray-400">No open polls in this group.</p>
       )}
 
