@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import useMemberStore from "../stores/memberStore.js";
 import { jwtDecode } from "jwt-decode";
 import Input from "./ui/Input.jsx";
 import Button from "./ui/Button.jsx";
@@ -9,12 +8,13 @@ import Label from "./ui/Label.jsx";
 import toast from "react-hot-toast";
 import ConfirmationModal from "./ui/ConfirmationModal.jsx";
 import { useDeleteGroup, useUpdateGroup } from "../hooks/useGroupDetail.js";
+import { useMembers } from "../hooks/useMembers.js";
 
 function GroupSettings({ group }) {
   const { mutateAsync: updateGroup, isUpdatePending } = useUpdateGroup();
   const { mutateAsync: deleteGroup, isDeletePending } = useDeleteGroup();
 
-  const { members } = useMemberStore();
+  const { data: members } = useMembers(group.id);
   const navigate = useNavigate();
 
   const [name, setName] = useState(group.name);
@@ -24,7 +24,7 @@ function GroupSettings({ group }) {
   const token = localStorage.getItem("token");
   const currentUser = token ? jwtDecode(token).user : null;
   const currentUserIsAdmin =
-    members.find((m) => m.id === currentUser?.id)?.role === "admin";
+    members?.find((m) => m.id === currentUser?.id)?.role === "admin";
 
   if (!currentUserIsAdmin) {
     return;

@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from "react";
-import useMemberStore from "../stores/memberStore.js";
+import React, { useState } from "react";
 import { jwtDecode } from "jwt-decode";
 import Card from "./ui/Card.jsx";
 import H2 from "./ui/H2.jsx";
@@ -8,9 +7,11 @@ import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import ConfirmationModal from "./ui/ConfirmationModal.jsx";
 import MemberListSkeleton from "./skeletons/MemberListSkeleton.jsx";
+import { useMembers, useRemoveMember } from "../hooks/useMembers.js";
 
 function MemberList({ groupId }) {
-  const { members, isLoading, fetchMembers, removeMember } = useMemberStore();
+  const { data: members, isLoading, isError } = useMembers(groupId);
+  const { mutateAsync: removeMember, isPending } = useRemoveMember();
 
   const [memberIdToDelete, setMemberIdToDelete] = useState(null);
 
@@ -18,29 +19,22 @@ function MemberList({ groupId }) {
   const token = localStorage.getItem("token");
   const currentUser = token ? jwtDecode(token).user : null;
 
-  useEffect(() => {
-    fetchMembers(groupId).then();
-  }, [groupId, fetchMembers]);
-
   const handleRemoveMemberClick = (memberId) => setMemberIdToDelete(memberId);
   const handleConfirmRemove = async () => {
     const removeMemberToast = toast.loading("Removing member...");
-
     try {
-      await removeMember(groupId, memberIdToDelete);
+      await removeMember({ groupId, userId: memberIdToDelete });
       setMemberIdToDelete(null);
       toast.dismiss(removeMemberToast);
     } catch (err) {
       console.error("Error removing member:", err);
-      toast.error(err.response?.data?.message || "Failed to remove member", {
-        id: removeMemberToast,
-      });
+      toast.dismiss(removeMemberToast);
     }
   };
 
   // Check if the current user is admin
   const currentUserIsAdmin =
-    members.find((m) => m.id === currentUser?.id)?.role === "admin";
+    members?.find((m) => m.id === currentUser?.id)?.role === "admin";
 
   const renderContent = () => {
     if (isLoading) {
@@ -76,6 +70,7 @@ function MemberList({ groupId }) {
                 <Button
                   onClick={() => handleRemoveMemberClick(member.id)}
                   className="text-xs py-1 px-3 bg-red-600 hover:bg-red-700 text-white"
+                  disabled={isPending}
                 >
                   Remove
                 </Button>
@@ -86,6 +81,9 @@ function MemberList({ groupId }) {
       );
     }
   };
+
+  if (isError)
+    return <div className="text-red-400">Failed to load members.</div>;
 
   return (
     <>
