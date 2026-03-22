@@ -1,14 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
-import useMessageStore from "../stores/messageStore.js";
-import toast from "react-hot-toast";
 import Card from "./ui/Card.jsx";
 import H2 from "./ui/H2.jsx";
 import MessageBoardSkeleton from "./skeletons/MessageBoardSkeleton.jsx";
 import Input from "./ui/Input.jsx";
 import Button from "./ui/Button.jsx";
+import { useMessages, usePostMessage } from "../hooks/useMessages.js";
 
 function MessageBoard({ groupId }) {
-  const { messages, isLoading, fetchMessages, postMessage } = useMessageStore();
+  const { data: messages, isLoading, isError } = useMessages(groupId);
+  const { mutateAsync: postMessage, isPending } = usePostMessage();
   const [content, setContent] = useState("");
   const messagesEndRef = useRef(null);
 
@@ -20,15 +20,6 @@ function MessageBoard({ groupId }) {
   };
 
   useEffect(() => {
-    fetchMessages(groupId).then();
-    const interval = setInterval(() => {
-      fetchMessages(groupId).then();
-    }, 10_000); // 10 sec
-
-    return () => clearInterval(interval);
-  }, [groupId, fetchMessages]);
-
-  useEffect(() => {
     scrollToBottom();
   }, [messages]);
 
@@ -36,10 +27,10 @@ function MessageBoard({ groupId }) {
     e.preventDefault();
     if (!content.trim()) return;
     try {
-      await postMessage(groupId, content);
+      await postMessage({ groupId, content });
       setContent("");
     } catch {
-      toast.error("Failed to post message");
+      console.error("Failed to post message");
     }
   };
 
@@ -81,6 +72,9 @@ function MessageBoard({ groupId }) {
     }
   };
 
+  if (isError)
+    return <div className="text-red-400">Failed to load messages.</div>;
+
   return (
     <Card className="mt-8">
       <H2 className="mb-4">Message Board</H2>
@@ -98,7 +92,7 @@ function MessageBoard({ groupId }) {
           placeholder="Type your message..."
           className="flex-1"
         />
-        <Button type="submit" className="w-auto">
+        <Button type="submit" className="w-auto" disabled={isPending}>
           Send
         </Button>
       </form>
