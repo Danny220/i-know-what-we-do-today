@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
-import useProfileStore from "../stores/profileStore.js";
 import Container from "../components/ui/Container.jsx";
 import Button from "../components/ui/Button.jsx";
 import H1 from "../components/ui/H1.jsx";
@@ -10,20 +9,20 @@ import Textarea from "../components/ui/Textarea.jsx";
 import toast from "react-hot-toast";
 import apiClient from "../clients/apiClient.js";
 import { useDropzone } from "react-dropzone";
+import { useProfile, useUpdateProfile } from "../hooks/useProfile.js";
 
 function ProfilePage() {
   const { userId } = useParams();
-  const { profile, isLoading, fetchProfile, updateProfile } = useProfileStore();
+
+  const { data: profile, isLoading, isError } = useProfile(userId);
+  const { mutateAsync: updateProfile, isPending } = useUpdateProfile();
+
   const [isEditing, setIsEditing] = useState(false);
   const [bio, setBio] = useState("");
 
   const token = localStorage.getItem("token");
   const currentUser = token ? jwtDecode(token).user : null;
   const isOwnProfile = currentUser?.id === userId;
-
-  useEffect(() => {
-    fetchProfile(userId).then();
-  }, [userId, fetchProfile]);
 
   useEffect(() => {
     if (profile) {
@@ -35,7 +34,8 @@ function ProfilePage() {
     const saveProfileToast = toast.loading("Updating profile...");
 
     try {
-      await updateProfile({ bio });
+      const profileData = { bio };
+      await updateProfile({ profileData });
       setIsEditing(false);
       toast.success("Profile updated successfully!", { id: saveProfileToast });
     } catch {
@@ -72,7 +72,9 @@ function ProfilePage() {
         const cloudinaryData = await cloudinaryResponse.json();
         const avatar_url = cloudinaryData.secure_url;
 
-        await updateProfile({ bio, avatar_url });
+        const profileData = { bio, avatar_url };
+
+        await updateProfile({ profileData });
         toast.success("Profile picture updated successfully!", {
           id: uploadToast,
         });
@@ -89,6 +91,14 @@ function ProfilePage() {
     accept: { "image/*": [".jpeg", ".png", ".jpg"] },
     multiple: false,
   });
+
+  if (isError) {
+    return (
+      <div className="text-center py-10 text-red-400">
+        Error loading profile
+      </div>
+    );
+  }
 
   const renderPage = () => {
     if (isLoading) return <p>Loading profile...</p>;
@@ -139,7 +149,9 @@ function ProfilePage() {
           <div className="mt-6">
             {isEditing ? (
               <div className="flex gap-4">
-                <Button onClick={handleSave}>Save</Button>
+                <Button onClick={handleSave} disabled={isPending}>
+                  {isPending ? "Saving..." : "Save Changes"}
+                </Button>
                 <Button
                   onClick={() => setIsEditing(false)}
                   className="bg-gray-600 hover:bg-gray-700"
