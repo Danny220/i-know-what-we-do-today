@@ -36,10 +36,7 @@ function Polls({ groupId }) {
       });
     } catch (error) {
       console.error("Error during finalization", error);
-      toast.error(
-        `Finalization failed: ${error.response?.data?.message || "Please try again."}`,
-        { id: finalizeToast },
-      );
+      toast.dismiss(finalizeToast);
     }
   };
 

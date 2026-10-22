@@ -6,7 +6,7 @@ import {
 } from "../hooks/useNotifications.js";
 
 function Notifications() {
-  const { data: notifications = [], isError } = useNotifications();
+  const { data: notifications = [], isError, isLoading } = useNotifications();
   const { mutateAsync: markAllAsRead, isPending } = useMarkAllAsRead();
 
   const [isOpen, setIsOpen] = useState(false);
@@ -26,7 +26,9 @@ function Notifications() {
   if (isError) {
     return <div className="text-red-400">Failed to load notifications.</div>;
   }
-
+  if (isLoading) {
+    return <div className="text-gray-400">Loading notifications...</div>;
+  }
   return (
     <div className="relative">
       <button
@@ -64,7 +66,7 @@ function Notifications() {
                 <Link
                   to={notif.link_url}
                   key={notif.id}
-                  className="block px-4 py-3 hover:bg-gray-600"
+                  className={`block px-4 py-3 hover:bg-gray-500 ${!notif.is_read ? "bg-gray-600" : "bg-transparent"}`}
                   onClick={() => setIsOpen(false)}
                 >
                   <p className="text-sm text-gray-200">{notif.message}</p>
